@@ -330,17 +330,3 @@ class TeamsStream(IntercomStream):
             ),
         ),
     ).to_dict()
-
-
-class TagsStream(IntercomStream):
-    name = "tags"
-    path = "/tags"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
-    records_jsonpath = "$.teams[*]"
-    schema = PropertiesList(
-        Property("id", IntegerType),
-        Property("direct_link", StringType),
-        Property("name", StringType),
-        Property("color", StringType),
-        Property("description", StringType),
-    ).to_dict()
