@@ -232,6 +232,7 @@ class ConversationPartsStream(IntercomStream):
     schema = PropertiesList(
         Property("type", StringType),
         Property("id", StringType),
+        Property("conversation_id", StringType),
         Property("part_type", StringType),
         Property("body", StringType),
         Property("created_at", IntegerType),
@@ -270,6 +271,10 @@ class ConversationPartsStream(IntercomStream):
         Property("external_id", StringType),
         Property("redacted", BooleanType),
     ).to_dict()
+
+    def post_process(self, row: dict, context: dict | None = None) -> dict | None:
+        row["conversation_id"] = context["conversation_id"]
+        return row
 
 
 class AdminsStream(IntercomStream):
