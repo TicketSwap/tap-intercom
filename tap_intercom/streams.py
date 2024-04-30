@@ -321,7 +321,7 @@ class TeamsStream(IntercomStream):
     name = "teams"
     path = "/teams"
     primary_keys: t.ClassVar[list[str]] = ["id"]
-    records_jsonpath = "$.contacts[*]"
+    records_jsonpath = "$.teams[*]"
     schema = PropertiesList(
         Property("type", StringType),
         Property("id", StringType),
