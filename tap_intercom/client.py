@@ -72,6 +72,23 @@ class IntercomStream(RESTStream):
     def authenticator(self):
         """Return the authenticator."""
         return BearerTokenAuthenticator.create_for_stream(self, token=self.config.get("access_token"))
+    
+    @property
+    def http_headers(self) -> dict:
+        """Return headers dict to be used for HTTP requests.
+
+        If an authenticator is also specified, the authenticator's headers will be
+        combined with `http_headers` when making HTTP requests.
+
+        Returns:
+            Dictionary of HTTP headers to use as a base for every request.
+        """
+        result = self._http_headers
+        if "user_agent" in self.config:
+            result["User-Agent"] = self.config.get("user_agent")
+        result["Content-Type"] = "application/json"
+        result["Intercom-Version"] = "2.11"
+        return result
 
     def get_url_params(self, context, next_page_token):
         params = {}
@@ -93,7 +110,11 @@ class IntercomStream(RESTStream):
             A pagination helper instance.
         """
         return IntercomPaginator(page_size=150, start_value=None)
-
+    
+    def parse_response(self, response: Response) -> Iterable[dict]:
+        self.logger.info(response.json().get("pages", {}))
+        return super().parse_response(response)
+    
     def prepare_request_payload(
         self,
         context: dict | None,
