@@ -123,13 +123,13 @@ crt = ["awscrt (==0.19.17)"]
 
 [[package]]
 name = "cached-property"
-version = "1.0.0"
-description = "A cached-property for decorating methods in classes."
+version = "2.0"
+description = "A decorator for caching properties in classes."
 optional = false
 python-versions = "*"
 files = [
-    {file = "cached-property-1.0.0.tar.gz", hash = "sha256:041a60a616d59b13026c98b8e1f2b82b7f4ea049bcff44a86d4a0253ba1e2768"},
-    {file = "cached_property-1.0.0-py2.py3-none-any.whl", hash = "sha256:b4a188bb5f43efdbb0b0fc18faeb5c83d46a51f71d420b2127ca4a47123fba73"},
+    {file = "cached_property-2.0-py3-none-any.whl", hash = "sha256:0f82cf6c50cd808d9331fff35e1fead3c101d2aa5d3fbe39852a7f6d6cbe028b"},
+    {file = "cached_property-2.0.tar.gz", hash = "sha256:fd4a5530c01c2fa42fa89f423caf2f54c7edd5cd1da38507d06d4067af414763"},
 ]
 
 [[package]]
@@ -1224,4 +1224,4 @@ s3 = ["fs-s3fs"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4"
-content-hash = "5d3b4fcdbbda8ca89760262618c7957c0c1b345c262e13f04da578c46e2917c0"
+content-hash = "0a0d52d08fdd06306f7cfd740e8b739a4aa30a5b38fe8419d212499f56f4deae"
