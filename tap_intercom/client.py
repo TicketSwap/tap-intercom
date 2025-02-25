@@ -96,6 +96,5 @@ class IntercomStream(RESTStream):
                 }
             if next_page_token:
                 body["pagination"] = {"per_page": 150, "starting_after": next_page_token}
-            self.logger.info(body)
             return body
         return None
