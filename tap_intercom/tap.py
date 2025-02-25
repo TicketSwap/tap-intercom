@@ -27,6 +27,22 @@ class TapIntercom(Tap):
             th.DateTimeType,
             description="The earliest record date to sync",
         ),
+        th.Property(
+            "filters",
+            th.ObjectType(
+                th.Property(
+                    "stream",
+                    th.ArrayType(
+                        th.ObjectType(
+                            th.Property("field", th.StringType),
+                            th.Property("operator", th.StringType),
+                            th.Property("value", th.StringType),
+                        ),
+                    ),
+                ),
+            ),
+            description="Filters to apply to the API request (only for search endpoints)",
+        ),
     ).to_dict()
 
     def discover_streams(self) -> list[streams.IntercomStream]:
