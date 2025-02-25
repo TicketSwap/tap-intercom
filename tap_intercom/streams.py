@@ -336,11 +336,12 @@ class TeamsStream(IntercomStream):
         ),
     ).to_dict()
 
+
 class ContactsStream(IntercomStream):
     name = "contacts"
     path = "/contacts/search"
     primary_keys: t.ClassVar[list[str]] = ["id"]
-    records_jsonpath = "$.contacts[*]"
+    records_jsonpath = "$.data[*]"
     replication_key = "updated_at"
     rest_method = "POST"
 
@@ -348,7 +349,11 @@ class ContactsStream(IntercomStream):
         Property("type", StringType),
         Property("id", StringType, description="The unique identifier for the contact"),
         Property("workspace_id", StringType, description="The ID of the workspace the contact belongs to"),
-        Property("external_id", StringType, description="An external identifier for the contact, set by the integrating application"),
+        Property(
+            "external_id",
+            StringType,
+            description="An external identifier for the contact, set by the integrating application",
+        ),
         Property("role", StringType, description="The role of the contact, either user or lead"),
         Property("email", StringType, description="The email address of the contact"),
         Property("phone", StringType, description="The phone number of the contact"),
@@ -358,46 +363,72 @@ class ContactsStream(IntercomStream):
             ObjectType(
                 Property("type", StringType, description="The type of object"),
                 Property("image_url", StringType, description="URL of the contact's avatar image"),
-            )
+            ),
         ),
         Property("owner_id", StringType, description="The ID of the teammate who owns this contact"),
         Property(
-            "social_profiles", 
+            "social_profiles",
             ObjectType(
-                Property("data", ArrayType(
-                    ObjectType(
-                        Property("type", StringType),
-                        Property("name", StringType),
-                        Property("url", StringType),
+                Property(
+                    "data",
+                    ArrayType(
+                        ObjectType(
+                            Property("type", StringType),
+                            Property("name", StringType),
+                            Property("url", StringType),
                         ),
                     ),
                 ),
             ),
             description="A list of social profiles associated with the contact",
         ),
-        Property("has_hard_bounced", BooleanType, description="Indicates whether the contact's email address has hard bounced"),
-        Property("marked_email_as_spam", BooleanType, description="Indicates whether the contact has marked emails from the workspace as spam"),
-        Property("unsubscribed_from_emails", BooleanType, description="Indicates whether the contact has unsubscribed from emails"),
-        Property("created_at", DateTimeType, description="The time when the contact was created, in Unix time"),
-        Property("updated_at", DateTimeType, description="The time when the contact was last updated, in Unix time"),
-        Property("last_seen_at", DateTimeType, description="The time when the contact was last seen, in Unix time"),
-        Property("signed_up_at", DateTimeType, description="The time when the contact signed up, in Unix time"),
-        Property("last_replied_at", DateTimeType, description="The time when the contact last replied, in Unix time"),
-        Property("last_contacted_at", DateTimeType, description="The time when the contact was last contacted, in Unix time"),
-        Property("last_email_opened_at", DateTimeType, description="The time when the contact last opened an email, in Unix time"),
-        Property("last_email_clicked_at", DateTimeType, description="The time when the contact last clicked a link in an email, in Unix time"),
+        Property(
+            "has_hard_bounced",
+            BooleanType,
+            description="Indicates whether the contact's email address has hard bounced",
+        ),
+        Property(
+            "marked_email_as_spam",
+            BooleanType,
+            description="Indicates whether the contact has marked emails from the workspace as spam",
+        ),
+        Property(
+            "unsubscribed_from_emails",
+            BooleanType,
+            description="Indicates whether the contact has unsubscribed from emails",
+        ),
+        Property("created_at", IntegerType, description="The time when the contact was created, in Unix time"),
+        Property("updated_at", IntegerType, description="The time when the contact was last updated, in Unix time"),
+        Property("last_seen_at", IntegerType, description="The time when the contact was last seen, in Unix time"),
+        Property("signed_up_at", IntegerType, description="The time when the contact signed up, in Unix time"),
+        Property("last_replied_at", IntegerType, description="The time when the contact last replied, in Unix time"),
+        Property(
+            "last_contacted_at", IntegerType, description="The time when the contact was last contacted, in Unix time"
+        ),
+        Property(
+            "last_email_opened_at",
+            IntegerType,
+            description="The time when the contact last opened an email, in Unix time",
+        ),
+        Property(
+            "last_email_clicked_at",
+            IntegerType,
+            description="The time when the contact last clicked a link in an email, in Unix time",
+        ),
         Property("language_override", StringType, description="The language override for the contact"),
         Property("browser", StringType, description="The browser used by the contact"),
         Property("browser_version", StringType, description="The version of the browser used by the contact"),
         Property("browser_language", StringType, description="The language of the browser used by the contact"),
         Property("os", StringType, description="The operating system used by the contact"),
         Property(
-            "location", 
+            "location",
             ObjectType(
                 Property("city", StringType, description="The city of the contact's location"),
                 Property("country", StringType, description="The country of the contact's location"),
                 Property("region", StringType, description="The region of the contact's location"),
-                Property("country_code", StringType, description="The ISO 3166-1 country code of the contact's location"),
+                Property(
+                    "country_code", StringType, description="The ISO 3166-1 country code of the contact's location"
+                ),
             ),
             description="An object containing location meta data about a Intercom contact.",
         ),
@@ -408,13 +439,15 @@ class ContactsStream(IntercomStream):
         Property("utm_term", StringType, description="The UTM term parameter from the contact's signup URL"),
         Property("utm_content", StringType, description="The UTM content parameter from the contact's signup URL"),
         Property(
-            "tags", 
+            "tags",
             ObjectType(
-                Property("data", ArrayType(
-                    ObjectType(
-                        Property("type", StringType),
-                        Property("id", StringType),
-                        Property("url", StringType),
+                Property(
+                    "data",
+                    ArrayType(
+                        ObjectType(
+                            Property("type", StringType),
+                            Property("id", StringType),
+                            Property("url", StringType),
                         ),
                     ),
                 ),
@@ -425,13 +458,15 @@ class ContactsStream(IntercomStream):
             description="Tags associated with the contact",
         ),
         Property(
-            "notes", 
+            "notes",
             ObjectType(
-                Property("data", ArrayType(
-                    ObjectType(
-                        Property("type", StringType),
-                        Property("id", StringType),
-                        Property("url", StringType),
+                Property(
+                    "data",
+                    ArrayType(
+                        ObjectType(
+                            Property("type", StringType),
+                            Property("id", StringType),
+                            Property("url", StringType),
                         ),
                     ),
                 ),
@@ -442,7 +477,7 @@ class ContactsStream(IntercomStream):
             description="Notes associated with the contact",
         ),
         Property(
-            "companies", 
+            "companies",
             ObjectType(
                 Property("url", StringType),
                 Property("total_count", IntegerType),
@@ -450,5 +485,5 @@ class ContactsStream(IntercomStream):
             ),
             description="Notes associated with the contact",
         ),
-        Property("custom_attributes", StringType, description="Custom attributes associated with the contact")
+        Property("custom_attributes", ObjectType(), description="Custom attributes associated with the contact"),
     ).to_dict()

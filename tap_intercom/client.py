@@ -3,59 +3,21 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
-from typing import Any, Callable, Iterable
 import typing
-import base64
-from urllib.parse import urlencode
 from datetime import datetime
-from urllib.parse import parse_qsl
+from pathlib import Path
+from typing import Callable
 
 T = typing.TypeVar("T")
 TPageToken = typing.TypeVar("TPageToken")
 _TToken = typing.TypeVar("_TToken")
 
 import requests
-from requests import Response
 from singer_sdk.authenticators import BearerTokenAuthenticator
-from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.pagination import BasePageNumberPaginator  # noqa: TCH002
 from singer_sdk.streams import RESTStream
-from singer_sdk.pagination import BaseOffsetPaginator
-
-
-if sys.version_info >= (3, 8):
-    from functools import cached_property
-else:
-    from cached_property import cached_property
 
 _Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
-
-
-class IntercomPaginator(BaseOffsetPaginator):
-    def has_more(self, response: Response) -> bool:  # noqa: ARG002
-        """Override this method to check if the endpoint has any pages left.
-
-        Args:
-            response: API response object.
-
-        Returns:
-            Boolean flag used to indicate if the endpoint has more pages.
-        """
-        return response.json().get("pages", {}).get("next") != None
-
-    def get_next(self, response: Response) -> TPageToken | None:
-        """Get the next pagination token or index from the API response.
-
-        Args:
-            response: API response object.
-
-        Returns:
-            The next page token or index. Return `None` from this method to indicate
-                the end of pagination.
-        """
-        return response.json().get("pages", {}).get("next", {}).get("starting_after")
 
 
 class IntercomStream(RESTStream):
@@ -67,12 +29,13 @@ class IntercomStream(RESTStream):
         return "https://api.intercom.io"
 
     records_jsonpath = "$[*]"  # Or override `parse_response`.
+    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
 
     @property
     def authenticator(self):
         """Return the authenticator."""
         return BearerTokenAuthenticator.create_for_stream(self, token=self.config.get("access_token"))
-    
+
     @property
     def http_headers(self) -> dict:
         """Return headers dict to be used for HTTP requests.
@@ -96,25 +59,6 @@ class IntercomStream(RESTStream):
             params = {"per_page": 150}
         return params
 
-    def get_new_paginator(self) -> BaseOffsetPaginator:
-        """Create a new pagination helper instance.
-
-        If the source API can make use of the `next_page_token_jsonpath`
-        attribute, or it contains a `X-Next-Page` header in the response
-        then you can remove this method.
-
-        If you need custom pagination that uses page numbers, "next" links, or
-        other approaches, please read the guide: https://sdk.meltano.com/en/v0.25.0/guides/pagination-classes.html.
-
-        Returns:
-            A pagination helper instance.
-        """
-        return IntercomPaginator(page_size=150, start_value=None)
-    
-    def parse_response(self, response: Response) -> Iterable[dict]:
-        self.logger.info(response.json().get("pages", {}))
-        return super().parse_response(response)
-    
     def prepare_request_payload(
         self,
         context: dict | None,
@@ -137,11 +81,21 @@ class IntercomStream(RESTStream):
             body = {"sort": {"field": "updated_at", "order": "ascending"}}
             start_date = self.get_starting_replication_key_value(context)
             if start_date:
-                if type(start_date) == str:
+                if type(start_date) is str:
                     start_date = int(datetime.timestamp(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ")))
-                body["query"] = {"field": "updated_at", "operator": ">", "value": start_date}
+                filters = [
+                    {"field": f["field"], "operator": f["operator"], "value": f["value"]}
+                    for f in self.config.get("filters", {}).get(self.name, [])
+                ]
+                body["query"] = {
+                    "operator": "AND",
+                    "value": [
+                        {"field": "created_at", "operator": ">", "value": start_date},
+                        *filters,
+                    ],
+                }
             if next_page_token:
                 body["pagination"] = {"per_page": 150, "starting_after": next_page_token}
+            self.logger.info(body)
             return body
-        else:
-            return None
+        return None
