@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import sys
 import typing
-from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
@@ -80,21 +78,35 @@ class IntercomStream(RESTStream):
         if self.rest_method == "POST":
             body = {"sort": {"field": "updated_at", "order": "ascending"}}
             start_date = self.get_starting_replication_key_value(context)
-            if start_date:
-                if type(start_date) is str:
-                    start_date = int(datetime.timestamp(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ")))
-                filters = [
-                    {"field": f["field"], "operator": f["operator"], "value": f["value"]}
-                    for f in self.config.get("filters", {}).get(self.name, [])
-                ]
+            if start_date or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
                     "operator": "AND",
                     "value": [
-                        {"field": "created_at", "operator": ">", "value": start_date},
-                        *filters,
+                        {"field": f["field"], "operator": f["operator"], "value": f["value"]}
+                        for f in self.config.get("filters", {}).get(self.name, [])
                     ],
                 }
+                if start_date:
+                    body["query"]["value"].append(
+                        {
+                            "field": "created_at",
+                            "operator": ">",
+                            "value": start_date,
+                        },
+                    )
             if next_page_token:
                 body["pagination"] = {"per_page": 150, "starting_after": next_page_token}
             return body
         return None
+
+    def compare_start_date(self, value: str, start_date_value: str) -> str:
+        """Compare a bookmark value to a start date and return the most recent value.
+
+        Args:
+            value: The replication key value.
+            start_date_value: The start date value from the config.
+
+        Returns:
+            The most recent value between the bookmark and start date.
+        """
+        return max(value, start_date_value)
