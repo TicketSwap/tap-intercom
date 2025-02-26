@@ -24,8 +24,8 @@ class TapIntercom(Tap):
         ),
         th.Property(
             "start_date",
-            th.DateTimeType,
-            description="The earliest record date to sync",
+            th.IntegerType,
+            description="The earliest record date to sync, in unix timestamp format",
         ),
         th.Property(
             "filters",
