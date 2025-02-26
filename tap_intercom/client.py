@@ -110,3 +110,23 @@ class IntercomStream(RESTStream):
             The most recent value between the bookmark and start date.
         """
         return max(value, start_date_value)
+
+    def post_process(
+        self,
+        row: dict,
+        context: dict | None = None,  # noqa: ARG002
+    ) -> dict | None:
+        """As needed, append or transform raw data to match expected structure.
+
+        Args:
+            row: Individual record in the stream.
+            context: Stream partition or context dictionary.
+
+        Returns:
+            The resulting record dict, or `None` if the record should be excluded.
+        """
+        if row.get("custom_attributes"):
+            row["custom_attributes"] = {
+                key.lower().replace(" ", "_"): value for key, value in row["custom_attributes"].items()
+            }
+        return row

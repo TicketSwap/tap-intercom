@@ -199,7 +199,7 @@ conversations_schema = PropertiesList(
         "custom_attributes",
         ObjectType(
             Property(
-                "Active Draft",
+                "active_draft",
                 ObjectType(
                     Property("type", StringType),
                     Property(
