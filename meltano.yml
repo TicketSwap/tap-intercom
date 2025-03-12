@@ -14,7 +14,7 @@ plugins:
     - catalog
     - discover
     config:
-      start_date: '2023-12-08T15:00:00Z'
+      start_date: 1741706134
       access_token: $TAP_INTERCOM_ACCESS_TOKEN
     select:
     - "*.*"

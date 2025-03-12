@@ -76,7 +76,7 @@ class IntercomStream(RESTStream):
                 next page of data.
         """
         if self.rest_method == "POST":
-            body = {"sort": {"field": "updated_at", "order": "ascending"}}
+            body = {"sort": {"field": self.replication_key, "order": "ascending"}}
             start_date = self.get_starting_replication_key_value(context)
             if start_date or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
@@ -89,7 +89,7 @@ class IntercomStream(RESTStream):
                 if start_date:
                     body["query"]["value"].append(
                         {
-                            "field": "created_at",
+                            "field": self.replication_key,
                             "operator": ">",
                             "value": start_date,
                         },
