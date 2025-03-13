@@ -330,7 +330,7 @@ contacts_schema = PropertiesList(
             Property("image_url", StringType, description="URL of the contact's avatar image"),
         ),
     ),
-    Property("owner_id", StringType, description="The ID of the teammate who owns this contact"),
+    Property("owner_id", IntegerType, description="The ID of the teammate who owns this contact"),
     Property(
         "social_profiles",
         ObjectType(
