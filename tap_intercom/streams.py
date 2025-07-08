@@ -21,12 +21,13 @@ class ConversationsStream(IntercomStream):
     primary_keys: t.ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
     records_jsonpath = "$.conversations[*]"
-    rest_method = "POST"
+    http_method = "POST"
     schema = conversations_schema
 
     def get_child_context(self, record: dict, context: t.Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
+
 
 class ConversationPartsStream(IntercomStream):
     name = "conversation_parts"
@@ -42,12 +43,14 @@ class ConversationPartsStream(IntercomStream):
         row["conversation_id"] = context["conversation_id"]
         return row
 
+
 class AdminsStream(IntercomStream):
     name = "admins"
     path = "/admins"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.admins[*]"
     schema = admins_schema
+
 
 class TagsStream(IntercomStream):
     name = "tags"
@@ -56,6 +59,7 @@ class TagsStream(IntercomStream):
     records_jsonpath = "$.data[*]"
     schema = tags_schema
 
+
 class TeamsStream(IntercomStream):
     name = "teams"
     path = "/teams"
@@ -63,11 +67,12 @@ class TeamsStream(IntercomStream):
     records_jsonpath = "$.teams[*]"
     schema = teams_schema
 
+
 class ContactsStream(IntercomStream):
     name = "contacts"
     path = "/contacts/search"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.data[*]"
     replication_key = "updated_at"
-    rest_method = "POST"
+    http_method = "POST"
     schema = contacts_schema

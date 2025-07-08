@@ -53,7 +53,7 @@ class IntercomStream(RESTStream):
 
     def get_url_params(self, context, next_page_token):
         params = {}
-        if self.rest_method == "GET":
+        if self.http_method == "GET":
             params = {"per_page": 150}
         return params
 
@@ -75,7 +75,7 @@ class IntercomStream(RESTStream):
             next_page_token: Token, page number or any request argument to request the
                 next page of data.
         """
-        if self.rest_method == "POST":
+        if self.http_method == "POST":
             body = {"sort": {"field": self.replication_key, "order": "ascending"}}
             start_date = self.get_starting_replication_key_value(context)
             if start_date or self.config.get("filters", {}).get(self.name):
