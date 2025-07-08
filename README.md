@@ -90,8 +90,8 @@ Follow these instructions to contribute to this project.
 ### Initialize your Development Environment
 
 ```bash
-pipx install poetry
-poetry install
+pipx install uv
+uv sync
 ```
 
 ### Create and Run Tests
@@ -100,13 +100,13 @@ Create tests within the `tests` subfolder and
   then run:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
-You can also test the `tap-intercom` CLI interface directly using `poetry run`:
+You can also test the `tap-intercom` CLI interface directly using `uv run`:
 
 ```bash
-poetry run tap-intercom --help
+uv run tap-intercom --help
 ```
 
 ### Testing with [Meltano](https://www.meltano.com)
