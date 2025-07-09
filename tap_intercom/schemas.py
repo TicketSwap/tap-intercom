@@ -243,7 +243,7 @@ conversations_schema = PropertiesList(
                                     ObjectType(
                                         Property("eventId", StringType),
                                         Property("eventTitle", StringType),
-                                        Property("sellerId", IntegerType),
+                                        Property("sellerId", StringType),
                                     ),
                                 ),
                                 Property("type", StringType),
@@ -267,7 +267,7 @@ conversations_schema = PropertiesList(
                                     ObjectType(
                                         Property("eventId", StringType),
                                         Property("eventTitle", StringType),
-                                        Property("sellerId", IntegerType),
+                                        Property("sellerId", StringType),
                                     ),
                                 ),
                                 Property("type", StringType),
