@@ -213,7 +213,7 @@ conversations_schema = PropertiesList(
                                     ObjectType(
                                         Property("event_id", StringType),
                                         Property("event_title", StringType),
-                                        Property("has_errors", StringType),
+                                        Property("has_errors", BooleanType),
                                     ),
                                 ),
                                 Property("type", StringType),
@@ -224,7 +224,7 @@ conversations_schema = PropertiesList(
             ),
             Property("cx_score_rating", IntegerType),
             Property("cx_score_explanation", StringType),
-            Property("open_cx_category", StringType),
+            Property("opencx_category", StringType),
             Property("opencxeventname", StringType),
             Property("opencxeventid", StringType),
             Property("opencxeventcountry", StringType),
@@ -241,9 +241,9 @@ conversations_schema = PropertiesList(
                                 Property(
                                     "custom_attributes",
                                     ObjectType(
-                                        Property("eventid", StringType),
-                                        Property("eventtitle", StringType),
-                                        Property("sellerid", IntegerType),
+                                        Property("eventId", StringType),
+                                        Property("eventTitle", StringType),
+                                        Property("sellerId", IntegerType),
                                     ),
                                 ),
                                 Property("type", StringType),
@@ -265,9 +265,9 @@ conversations_schema = PropertiesList(
                                 Property(
                                     "custom_attributes",
                                     ObjectType(
-                                        Property("eventid", StringType),
-                                        Property("eventtitle", StringType),
-                                        Property("sellerid", IntegerType),
+                                        Property("eventId", StringType),
+                                        Property("eventTitle", StringType),
+                                        Property("sellerId", IntegerType),
                                     ),
                                 ),
                                 Property("type", StringType),
@@ -289,12 +289,12 @@ conversations_schema = PropertiesList(
                                 Property(
                                     "custom_attributes",
                                     ObjectType(
-                                        Property("eventid", StringType),
-                                        Property("eventtitle", StringType),
+                                        Property("eventId", StringType),
+                                        Property("eventTitle", StringType),
                                         Property("amount", StringType), # includes currency sign
-                                        Property("predictedarrivalat", StringType),
+                                        Property("predictedArrivalAt", StringType),
                                         Property("state", StringType),
-                                        Property("statelabel", StringType),
+                                        Property("stateLabel", StringType),
                                     ),
                                 ),
                                 Property("type", StringType),
