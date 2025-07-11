@@ -213,6 +213,88 @@ conversations_schema = PropertiesList(
                                     ObjectType(
                                         Property("event_id", StringType),
                                         Property("event_title", StringType),
+                                        Property("has_errors", BooleanType),
+                                    ),
+                                ),
+                                Property("type", StringType),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            Property("cx_score_rating", IntegerType),
+            Property("cx_score_explanation", StringType),
+            Property("opencx_category", StringType),
+            Property("opencxeventname", StringType),
+            Property("opencxeventid", StringType),
+            Property("opencxeventcountry", StringType),
+            Property(
+                "latest_bought_listings",
+                ObjectType(
+                    Property("type", StringType),
+                    Property(
+                        "instances",
+                        ArrayType(
+                            ObjectType(
+                                Property("id", StringType),
+                                Property("external_id", StringType),
+                                Property(
+                                    "custom_attributes",
+                                    ObjectType(
+                                        Property("eventId", StringType),
+                                        Property("eventTitle", StringType),
+                                        Property("sellerId", StringType),
+                                    ),
+                                ),
+                                Property("type", StringType),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            Property(
+                "selected_bought_listing",
+                ObjectType(
+                    Property("type", StringType),
+                    Property(
+                        "instances",
+                        ArrayType(
+                            ObjectType(
+                                Property("id", StringType),
+                                Property("external_id", StringType),
+                                Property(
+                                    "custom_attributes",
+                                    ObjectType(
+                                        Property("eventId", StringType),
+                                        Property("eventTitle", StringType),
+                                        Property("sellerId", StringType),
+                                    ),
+                                ),
+                                Property("type", StringType),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            Property(
+                "last_payout",
+                ObjectType(
+                    Property("type", StringType),
+                    Property(
+                        "instances",
+                        ArrayType(
+                            ObjectType(
+                                Property("id", StringType),
+                                Property("external_id", StringType),
+                                Property(
+                                    "custom_attributes",
+                                    ObjectType(
+                                        Property("eventId", StringType),
+                                        Property("eventTitle", StringType),
+                                        Property("amount", StringType), # includes currency sign
+                                        Property("predictedArrivalAt", StringType),
+                                        Property("state", StringType),
+                                        Property("stateLabel", StringType),
                                     ),
                                 ),
                                 Property("type", StringType),
