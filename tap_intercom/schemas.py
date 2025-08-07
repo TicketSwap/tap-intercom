@@ -11,7 +11,6 @@ from singer_sdk.typing import (
 )
 
 conversations_schema = PropertiesList(
-    Property("type", StringType),
     Property("id", StringType),
     Property("title", StringType),
     Property("created_at", IntegerType),
@@ -27,12 +26,10 @@ conversations_schema = PropertiesList(
     Property(
         "tags",
         ObjectType(
-            Property("type", StringType),
             Property(
                 "tags",
                 ArrayType(
                     ObjectType(
-                        Property("type", StringType),
                         Property("id", StringType),
                         Property("name", StringType),
                         Property("applied_at", IntegerType),
@@ -57,15 +54,12 @@ conversations_schema = PropertiesList(
             Property(
                 "contact",
                 ObjectType(
-                    Property("type", StringType),
                     Property("id", StringType),
-                    Property("external_id", StringType),
                 ),
             ),
             Property(
                 "teammate",
                 ObjectType(
-                    Property("type", StringType),
                     Property("id", StringType),
                 ),
             ),
@@ -109,7 +103,6 @@ conversations_schema = PropertiesList(
     Property(
         "contacts",
         ObjectType(
-            Property("type", StringType),
             Property(
                 "contacts",
                 ArrayType(
@@ -125,12 +118,10 @@ conversations_schema = PropertiesList(
     Property(
         "teammates",
         ObjectType(
-            Property("type", StringType),
             Property(
                 "teammates",
                 ArrayType(
                     ObjectType(
-                        Property("type", StringType),
                         Property("id", StringType),
                     )
                 ),
@@ -148,7 +139,6 @@ conversations_schema = PropertiesList(
     Property(
         "sla_applied",
         ObjectType(
-            Property("type", StringType),
             Property("sla_name", StringType),
             Property("sla_status", StringType),
         ),
@@ -156,7 +146,6 @@ conversations_schema = PropertiesList(
     Property(
         "statistics",
         ObjectType(
-            Property("type", StringType),
             Property("time_to_assignment", IntegerType),
             Property("time_to_admin_reply", IntegerType),
             Property("time_to_first_close", IntegerType),
@@ -180,14 +169,11 @@ conversations_schema = PropertiesList(
     Property(
         "linked_objects",
         ObjectType(
-            Property("type", StringType),
             Property("total_count", IntegerType),
-            Property("has_more", BooleanType),
             Property(
                 "data",
                 ArrayType(
                     ObjectType(
-                        Property("type", StringType),
                         Property("id", StringType),
                         Property("category", StringType),
                     )
@@ -201,7 +187,6 @@ conversations_schema = PropertiesList(
             Property(
                 "active_draft",
                 ObjectType(
-                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -216,7 +201,6 @@ conversations_schema = PropertiesList(
                                         Property("has_errors", BooleanType),
                                     ),
                                 ),
-                                Property("type", StringType),
                             ),
                         ),
                     ),
@@ -231,7 +215,6 @@ conversations_schema = PropertiesList(
             Property(
                 "latest_bought_listings",
                 ObjectType(
-                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -246,7 +229,6 @@ conversations_schema = PropertiesList(
                                         Property("sellerId", StringType),
                                     ),
                                 ),
-                                Property("type", StringType),
                             ),
                         ),
                     ),
@@ -255,7 +237,6 @@ conversations_schema = PropertiesList(
             Property(
                 "selected_bought_listing",
                 ObjectType(
-                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -270,7 +251,6 @@ conversations_schema = PropertiesList(
                                         Property("sellerId", StringType),
                                     ),
                                 ),
-                                Property("type", StringType),
                             ),
                         ),
                     ),
@@ -279,7 +259,6 @@ conversations_schema = PropertiesList(
             Property(
                 "last_payout",
                 ObjectType(
-                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -308,7 +287,6 @@ conversations_schema = PropertiesList(
 ).to_dict()
 
 conversation_parts_schema = PropertiesList(
-    Property("type", StringType),
     Property("id", StringType),
     Property("conversation_id", StringType),
     Property("part_type", StringType),
@@ -351,16 +329,12 @@ conversation_parts_schema = PropertiesList(
 ).to_dict()
 
 admins_schema =  PropertiesList(
-    Property("type", StringType),
     Property("id", StringType),
     Property("name", StringType),
-    Property("email", StringType),
-    Property("job_title", StringType),
     Property("away_mode_enabled", BooleanType),
     Property("away_mode_reassign", BooleanType),
     Property("has_inbox_seat", BooleanType),
     Property("team_ids", ArrayType(IntegerType)),
-    Property("avatar", StringType),
     Property(
         "team_priority_level",
         ObjectType(
@@ -371,11 +345,8 @@ admins_schema =  PropertiesList(
 ).to_dict()
 
 tags_schema = PropertiesList(
-    Property("type", StringType),
     Property("id", StringType),
     Property("name", StringType),
-    Property("applied_at", IntegerType),
-    Property("applied_by", ObjectType(Property("type", StringType), Property("id", StringType))),
 ).to_dict()
 
 teams_schema = PropertiesList(
@@ -395,39 +366,10 @@ teams_schema = PropertiesList(
 contacts_schema = PropertiesList(
     Property("type", StringType),
     Property("id", StringType, description="The unique identifier for the contact"),
-    Property("workspace_id", StringType, description="The ID of the workspace the contact belongs to"),
     Property(
         "external_id",
         StringType,
         description="An external identifier for the contact, set by the integrating application",
-    ),
-    Property("role", StringType, description="The role of the contact, either user or lead"),
-    Property("email", StringType, description="The email address of the contact"),
-    Property("phone", StringType, description="The phone number of the contact"),
-    Property("name", StringType, description="The name of the contact"),
-    Property(
-        "avatar",
-        ObjectType(
-            Property("type", StringType, description="The type of object"),
-            Property("image_url", StringType, description="URL of the contact's avatar image"),
-        ),
-    ),
-    Property("owner_id", IntegerType, description="The ID of the teammate who owns this contact"),
-    Property(
-        "social_profiles",
-        ObjectType(
-            Property(
-                "data",
-                ArrayType(
-                    ObjectType(
-                        Property("type", StringType),
-                        Property("name", StringType),
-                        Property("url", StringType),
-                    ),
-                ),
-            ),
-        ),
-        description="A list of social profiles associated with the contact",
     ),
     Property(
         "has_hard_bounced",
@@ -479,7 +421,6 @@ contacts_schema = PropertiesList(
         ),
         description="An object containing location meta data about a Intercom contact.",
     ),
-    Property("ip", StringType, description="The IP address of the contact"),
     Property("utm_source", StringType, description="The UTM source parameter from the contact's signup URL"),
     Property("utm_medium", StringType, description="The UTM medium parameter from the contact's signup URL"),
     Property("utm_campaign", StringType, description="The UTM campaign parameter from the contact's signup URL"),
@@ -494,13 +435,10 @@ contacts_schema = PropertiesList(
                     ObjectType(
                         Property("type", StringType),
                         Property("id", StringType),
-                        Property("url", StringType),
                     ),
                 ),
             ),
-            Property("url", StringType),
             Property("total_count", IntegerType),
-            Property("has_more", BooleanType),
         ),
         description="Tags associated with the contact",
     ),
@@ -513,22 +451,10 @@ contacts_schema = PropertiesList(
                     ObjectType(
                         Property("type", StringType),
                         Property("id", StringType),
-                        Property("url", StringType),
                     ),
                 ),
             ),
-            Property("url", StringType),
             Property("total_count", IntegerType),
-            Property("has_more", BooleanType),
-        ),
-        description="Notes associated with the contact",
-    ),
-    Property(
-        "companies",
-        ObjectType(
-            Property("url", StringType),
-            Property("total_count", IntegerType),
-            Property("has_more", BooleanType),
         ),
         description="Notes associated with the contact",
     ),
