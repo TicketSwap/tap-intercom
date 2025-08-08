@@ -7,6 +7,7 @@ import typing as t
 from tap_intercom.client import IntercomStream
 from tap_intercom.schemas import (
     admins_schema,
+    articles_schema,
     contacts_schema,
     conversation_parts_schema,
     conversations_schema,
@@ -76,3 +77,10 @@ class ContactsStream(IntercomStream):
     replication_key = "updated_at"
     http_method = "POST"
     schema = contacts_schema
+
+class ArticlesStream(IntercomStream):
+    name = "articles"
+    path = "/articles"
+    primary_keys: t.ClassVar[list[str]] = ["id"]
+    records_jsonpath = "$.data[*]"
+    schema = articles_schema
