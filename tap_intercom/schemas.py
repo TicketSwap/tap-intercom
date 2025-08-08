@@ -10,6 +10,40 @@ from singer_sdk.typing import (
     StringType,
 )
 
+# define languages for translated articles content, add here to include
+languages = [
+    "bg",
+    "cs",
+    "de",
+    "en",
+    "es",
+    "fr",
+    "hu",
+    "it",
+    "nb",
+    "nl",
+    "pl",
+    "pt",
+    "pt-BR",
+    "sk",
+    "sv",
+]
+
+# define translated content articles schema to avoid repetition
+translated_content = [
+    Property(
+        lang,
+        ObjectType(
+            Property("title", StringType),
+            Property("description", StringType),
+            Property("author_id", IntegerType),
+            Property("state", StringType),
+            Property("created_at", IntegerType),
+            Property("updated_at", IntegerType),
+        ),
+    ) for lang in languages
+]
+
 conversations_schema = PropertiesList(
     Property("id", StringType),
     Property("title", StringType),
@@ -326,6 +360,7 @@ conversation_parts_schema = PropertiesList(
     ),
     Property("external_id", StringType),
     Property("redacted", BooleanType),
+    Property("conversation_part_has_body", BooleanType),
 ).to_dict()
 
 admins_schema =  PropertiesList(
@@ -459,4 +494,44 @@ contacts_schema = PropertiesList(
         description="Notes associated with the contact",
     ),
     Property("custom_attributes", ObjectType(), description="Custom attributes associated with the contact"),
+).to_dict()
+
+articles_schema = PropertiesList(
+    Property("id", StringType),
+    Property("parent_type", StringType),
+    Property("parent_ids", ArrayType(IntegerType)),
+    Property(
+        "translated_content",
+        ObjectType(*translated_content),
+    ),
+    Property("languages", ArrayType(StringType)),
+    Property(
+        "tags",
+        ObjectType(
+            Property(
+                "tags",
+                ArrayType(
+                    ObjectType(
+                        Property("id", StringType),
+                        Property("name", StringType),
+                        Property("applied_at", IntegerType),
+                        Property(
+                            "applied_by",
+                            ObjectType(
+                                Property("type", StringType),
+                                Property("id", StringType),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    Property("title", StringType),
+    Property("description", StringType),
+    Property("body", StringType),
+    Property("author_id", IntegerType),
+    Property("state", StringType),
+    Property("created_at", IntegerType),
+    Property("updated_at", IntegerType),
 ).to_dict()
