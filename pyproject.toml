@@ -21,17 +21,15 @@ classifiers = [
 license = "Apache-2.0"
 license-files = [ "LICENSE" ]
 requires-python = ">=3.9"
-
 dependencies = [
     "singer-sdk>=0.42.1",
     "fs-s3fs",
     "requests",
-    "cached-property",  # Remove after Python 3.7 support is dropped
 ]
 
 [project.optional-dependencies]
 s3 = [
-    "s3fs",
+    "s3fs~=2025.5.0",
 ]
 
 [project.scripts]
@@ -47,9 +45,9 @@ test = [
     "pytest-github-actions-annotate-failures>=0.3",
     "singer-sdk[testing]",
 ]
-[tool.hatch.build.targets.wheel]
-packages = [
-    "tap_intercom",
+typing = [
+    "mypy>=1.16.0",
+    "types-requests",
 ]
 
 [tool.pytest.ini_options]
@@ -59,7 +57,6 @@ addopts = [
 
 [tool.mypy]
 warn_unused_configs = true
-plugins = "sqlmypy"
 
 [tool.ruff.lint]
 ignore = [
@@ -87,6 +84,7 @@ requires = [
     "tox-uv",
 ]
 env_list = [
+    "typing",
     "py313",
     "py312",
     "py311",
@@ -102,3 +100,7 @@ pass_env = [
 ]
 dependency_groups = [ "test" ]
 commands = [ [ "pytest", { replace = "posargs", default = [ "tests" ], extend = true } ] ]
+
+[tool.tox.env.typing]
+dependency_groups = [ "test", "typing" ]
+commands = [ [ "mypy", { replace = "posargs", default = [ "tap_intercom", "tests" ], extend = true } ] ]
