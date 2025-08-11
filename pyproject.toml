@@ -1,5 +1,5 @@
 [project]
-name = "ticketswap-tap-intercom"
+name = "tap-intercom"
 version = "0.0.1"
 description = "`tap-intercom` is a Singer tap for Intercom, built with the Meltano Singer SDK."
 readme = "README.md"
