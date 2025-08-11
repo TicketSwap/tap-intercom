@@ -1554,7 +1554,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ticketswap-tap-intercom"
+name = "tap-intercom"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
