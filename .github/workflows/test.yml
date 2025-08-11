@@ -22,6 +22,9 @@ on:
     - uv.lock
   workflow_dispatch:
 
+permissions:
+    contents: read
+
 env:
   FORCE_COLOR: 1
   TAP_INTERCOM_ACCESS_TOKEN: ${{ secrets.TAP_INTERCOM_ACCESS_TOKEN }}
