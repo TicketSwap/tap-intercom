@@ -360,7 +360,11 @@ conversation_parts_schema = PropertiesList(
     ),
     Property("external_id", StringType),
     Property("redacted", BooleanType),
-    Property("conversation_part_has_body", BooleanType),
+    Property(
+        "conversation_part_has_body",
+        BooleanType,
+        description="Indicates whether this conversation part contains a non-empty body. True if the body field is present and not empty, false otherwise.",
+    ),
 ).to_dict()
 
 admins_schema =  PropertiesList(
