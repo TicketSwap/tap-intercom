@@ -16,23 +16,26 @@ from tap_intercom.schemas import (
 
 
 class ConversationsStream(IntercomStream):
+    """Stream for Intercom conversations."""
+
     name = "conversations"
     path = "/conversations/search"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
     records_jsonpath = "$.conversations[*]"
     http_method = "POST"
     schema = conversations_schema
 
-    def get_child_context(self, record: dict, context: t.Optional[dict]) -> dict:
+    def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
 
 
 class ConversationPartsStream(IntercomStream):
+    """Stream for Intercom conversation parts."""
+
     name = "conversation_parts"
     parent_stream_type = ConversationsStream
-    state_partitioning_keys = []
+    state_partitioning_keys: t.ClassVar[list[str]] = []
     path = "/conversations/{conversation_id}"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
@@ -40,39 +43,50 @@ class ConversationPartsStream(IntercomStream):
     schema = conversation_parts_schema
 
     def post_process(self, row: dict, context: dict | None = None) -> dict | None:
+        """As needed, append or transform raw data to match expected structure.
+
+        Args:
+            row: Individual record in the stream.
+            context: Stream partition or context dictionary.
+
+        Returns:
+            The resulting record dict, or `None` if the record should be excluded.
+        """
         row["conversation_id"] = context["conversation_id"]
         return row
 
 
 class AdminsStream(IntercomStream):
+    """Stream for Intercom admins."""
+
     name = "admins"
     path = "/admins"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.admins[*]"
     schema = admins_schema
 
 
 class TagsStream(IntercomStream):
+    """Stream for Intercom tags."""
+
     name = "tags"
     path = "/tags"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
-    records_jsonpath = "$.data[*]"
     schema = tags_schema
 
 
 class TeamsStream(IntercomStream):
+    """Stream for Intercom teams."""
+
     name = "teams"
     path = "/teams"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.teams[*]"
     schema = teams_schema
 
 
 class ContactsStream(IntercomStream):
+    """Stream for Intercom contacts."""
+
     name = "contacts"
     path = "/contacts/search"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
-    records_jsonpath = "$.data[*]"
     replication_key = "updated_at"
     http_method = "POST"
     schema = contacts_schema
