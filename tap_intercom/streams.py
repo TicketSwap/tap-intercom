@@ -93,6 +93,8 @@ class ContactsStream(IntercomStream):
     schema = contacts_schema
 
 class ArticlesStream(IntercomStream):
+    """Stream for Intercom articles."""
+    
     name = "articles"
     path = "/articles"
     primary_keys: t.ClassVar[list[str]] = ["id"]
