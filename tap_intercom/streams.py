@@ -24,7 +24,7 @@ class ConversationsStream(IntercomStream):
     http_method = "POST"
     schema = conversations_schema
 
-    def get_child_context(self, record: dict, context: t.Optional[dict]) -> dict:
+    def get_child_context(self, record: dict, context: dict | None) -> dict:
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
 
@@ -32,7 +32,7 @@ class ConversationsStream(IntercomStream):
 class ConversationPartsStream(IntercomStream):
     name = "conversation_parts"
     parent_stream_type = ConversationsStream
-    state_partitioning_keys = []
+    state_partitioning_keys: t.ClassVar[list[str]] = []
     path = "/conversations/{conversation_id}"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
