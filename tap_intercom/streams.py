@@ -97,6 +97,4 @@ class ArticlesStream(IntercomStream):
 
     name = "articles"
     path = "/articles"
-    primary_keys: t.ClassVar[list[str]] = ["id"]
-    records_jsonpath = "$.data[*]"
     schema = articles_schema
