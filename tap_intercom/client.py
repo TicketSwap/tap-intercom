@@ -6,13 +6,12 @@ import typing
 from pathlib import Path
 from typing import Callable
 
-T = typing.TypeVar("T")
-TPageToken = typing.TypeVar("TPageToken")
-_TToken = typing.TypeVar("_TToken")
-
 import requests
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.streams import RESTStream
+
+T = typing.TypeVar("T")
+TPageToken = typing.TypeVar("TPageToken")
 
 _Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
@@ -21,18 +20,23 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class IntercomStream(RESTStream):
     """Intercom stream class."""
 
+    primary_keys: typing.ClassVar[list[str]] = ["id"]
+    records_jsonpath = "$.data[*]"
+    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
+
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
         return "https://api.intercom.io"
 
-    records_jsonpath = "$[*]"  # Or override `parse_response`.
-    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
-
     @property
-    def authenticator(self):
+    def authenticator(self) -> BearerTokenAuthenticator:
         """Return the authenticator."""
-        return BearerTokenAuthenticator.create_for_stream(self, token=self.config.get("access_token"))
+        access_token = self.config.get("access_token")
+        if not access_token:
+            msg = "Access token is required"
+            raise ValueError(msg)
+        return BearerTokenAuthenticator.create_for_stream(self, token=access_token)
 
     @property
     def http_headers(self) -> dict:
@@ -45,13 +49,23 @@ class IntercomStream(RESTStream):
             Dictionary of HTTP headers to use as a base for every request.
         """
         result = self._http_headers
-        if "user_agent" in self.config:
-            result["User-Agent"] = self.config.get("user_agent")
+        user_agent = self.config.get("user_agent")
+        if user_agent:
+            result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
         result["Intercom-Version"] = "2.11"
         return result
 
-    def get_url_params(self, context, next_page_token):
+    def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
+        """Return URL params for the request.
+
+        Args:
+            context: Stream partition or context dictionary.
+            next_page_token: Token for next page of data.
+
+        Returns:
+            Dictionary of URL parameters.
+        """
         params = {}
         if self.http_method == "GET":
             params = {"per_page": 150}
@@ -60,7 +74,7 @@ class IntercomStream(RESTStream):
     def prepare_request_payload(
         self,
         context: dict | None,
-        next_page_token: _TToken | None,
+        next_page_token: object,
     ) -> dict | None:
         """Prepare the data payload for the REST API request.
 
