@@ -66,12 +66,6 @@ line-length = 120
 [tool.ruff.lint]
 ignore = [
     "COM812",  # missing-trailing-comma
-    "ANN001",  # missing-type-annotation-for-function-argument
-    "ANN201",  # missing-return-type-annotation-for-public-function
-    "D102",    # missing-docstring-in-public-method
-    "D101",    # missing-docstring-in-public-class
-    "ARG002",  # unused-method-argument
-    "ANN002",  # missing-type-annotation-for-*args
 ]
 select = ["ALL"]
 

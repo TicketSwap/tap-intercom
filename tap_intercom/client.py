@@ -20,13 +20,14 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class IntercomStream(RESTStream):
     """Intercom stream class."""
 
+    primary_keys: typing.ClassVar[list[str]] = ["id"]
+    records_jsonpath = "$.data[*]"
+    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
+
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
         return "https://api.intercom.io"
-
-    records_jsonpath = "$[*]"  # Or override `parse_response`.
-    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -55,7 +56,7 @@ class IntercomStream(RESTStream):
         result["Intercom-Version"] = "2.11"
         return result
 
-    def get_url_params(self, context: dict | None, next_page_token: object) -> dict:
+    def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
         """Return URL params for the request.
 
         Args:
@@ -127,7 +128,7 @@ class IntercomStream(RESTStream):
     def post_process(
         self,
         row: dict,
-        context: dict | None = None,
+        context: dict | None = None,  # noqa: ARG002
     ) -> dict | None:
         """As needed, append or transform raw data to match expected structure.
 
