@@ -57,6 +57,7 @@ class TapIntercom(Tap):
             streams.TagsStream(self),
             streams.TeamsStream(self),
             streams.ContactsStream(self),
+            streams.ArticlesStream(self),
         ]
 
 
