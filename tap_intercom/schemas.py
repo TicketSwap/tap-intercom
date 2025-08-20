@@ -316,6 +316,17 @@ conversations_schema = PropertiesList(
                     ),
                 ),
             ),
+            Property("language", StringType),
+            Property("event_link", StringType),
+            Property("eventcode", StringType),
+            Property("organisercode", StringType),
+            Property("secureswap_fr", StringType),
+            Property("modify_event", StringType),
+            Property("primary_ticketing_uk", StringType),
+            Property("eventix_link", StringType),
+            Property("primary_ticketing_fr", StringType),
+            Property("modifier_l'événement", StringType),
+            
         ),
     ),
 ).to_dict()
