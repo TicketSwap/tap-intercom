@@ -326,7 +326,6 @@ conversations_schema = PropertiesList(
             Property("eventix_link", StringType),
             Property("primary_ticketing_fr", StringType),
             Property("modifier_l'événement", StringType),
-            
         ),
     ),
 ).to_dict()
