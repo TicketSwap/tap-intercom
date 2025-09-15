@@ -42,6 +42,11 @@ class TapIntercom(Tap):
             ),
             description="Filters to apply to the API request (only for search endpoints)",
         ),
+        th.Property(
+            "max_days",
+            th.IntegerType,
+            description="The maximum number of days to sync from the start date (or state)",
+        ),
     ).to_dict()
 
     def discover_streams(self) -> list[streams.IntercomStream]:

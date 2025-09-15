@@ -108,6 +108,15 @@ class IntercomStream(RESTStream):
                             "value": start_date,
                         },
                     )
+                    if self.config.get("max_days"):
+                        end_date = int(start_date) + (self.config["max_days"] * 60 * 60 * 24)  # max days in seconds
+                        body["query"]["value"].append(
+                            {
+                                "field": self.replication_key,
+                                "operator": "<=",
+                                "value": end_date,
+                            },
+                        )
             if next_page_token:
                 body["pagination"] = {"per_page": 150, "starting_after": next_page_token}
             return body
