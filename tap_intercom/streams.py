@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import typing as t
 
-from tap_intercom.client import IntercomStream
+from singer_sdk.pagination import JSONPathPaginator
+from urllib.parse import parse_qsl
+
+from tap_intercom.client import IntercomStream, IntercomHATEOASPaginator
 from tap_intercom.schemas import (
     admins_schema,
     articles_schema,
@@ -29,6 +32,9 @@ class ConversationsStream(IntercomStream):
     def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
+
+    def get_new_paginator(self):
+        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
 
 
 class ConversationPartsStream(IntercomStream):
@@ -92,9 +98,25 @@ class ContactsStream(IntercomStream):
     http_method = "POST"
     schema = contacts_schema
 
+    def get_new_paginator(self):
+        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
+
 class ArticlesStream(IntercomStream):
     """Stream for Intercom articles."""
 
     name = "articles"
-    path = "/articles"
+    path = "/articles/search"
+    records_jsonpath = "$.data.articles[*]"
     schema = articles_schema
+
+    def get_new_paginator(self):
+        return IntercomHATEOASPaginator()
+
+    def get_url_params(self, context, next_page_token):
+        params = {}
+        
+        if next_page_token:
+            params.update(parse_qsl(next_page_token.query))
+            return params
+        else:
+            return super().get_url_params(context, next_page_token)

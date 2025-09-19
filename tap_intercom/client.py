@@ -9,6 +9,7 @@ from typing import Callable
 import requests
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.streams import RESTStream
+from singer_sdk.pagination import BaseHATEOASPaginator
 
 T = typing.TypeVar("T")
 TPageToken = typing.TypeVar("TPageToken")
@@ -22,7 +23,6 @@ class IntercomStream(RESTStream):
 
     primary_keys: typing.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.data[*]"
-    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
 
     @property
     def url_base(self) -> str:
@@ -53,7 +53,7 @@ class IntercomStream(RESTStream):
         if user_agent:
             result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
-        result["Intercom-Version"] = "2.11"
+        result["Intercom-Version"] = "2.14"
         return result
 
     def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
@@ -144,3 +144,12 @@ class IntercomStream(RESTStream):
                 key.lower().replace(" ", "_"): value for key, value in row["custom_attributes"].items()
             }
         return row
+
+
+class IntercomHATEOASPaginator(BaseHATEOASPaginator):
+    def has_more(self, response) -> bool:
+        return response.json().get('pages').get('next') is not None
+    
+    def get_next_url(self, response):
+        return response.json().get('pages').get('next')
+    
