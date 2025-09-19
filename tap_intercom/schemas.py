@@ -549,6 +549,17 @@ articles_schema = PropertiesList(
     Property("body", StringType),
     Property("author_id", IntegerType),
     Property("state", StringType),
+    Property(
+        "statistics",
+        ObjectType(
+            Property("views", IntegerType),
+            Property("conversions", IntegerType),
+            Property("reactions", IntegerType),
+            Property("happy_reaction_percentage", IntegerType),
+            Property("neutral_reaction_percentage", IntegerType),
+            Property("sad_reaction_percentage", IntegerType),
+        ),
+    ),
     Property("created_at", IntegerType),
     Property("updated_at", IntegerType),
 ).to_dict()
