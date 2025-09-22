@@ -33,9 +33,6 @@ class ConversationsStream(IntercomStream):
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
 
-    def get_new_paginator(self):
-        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
-
 
 class ConversationPartsStream(IntercomStream):
     """Stream for Intercom conversation parts."""
@@ -98,9 +95,6 @@ class ContactsStream(IntercomStream):
     http_method = "POST"
     schema = contacts_schema
 
-    def get_new_paginator(self):
-        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
-
 class ArticlesStream(IntercomStream):
     """Stream for Intercom articles."""
 
@@ -109,6 +103,7 @@ class ArticlesStream(IntercomStream):
     records_jsonpath = "$.data.articles[*]"
     schema = articles_schema
 
+    # uses different pagination, overrida default
     def get_new_paginator(self):
         return IntercomHATEOASPaginator()
 
