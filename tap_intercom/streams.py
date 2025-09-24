@@ -132,3 +132,23 @@ class ArticlesStream(IntercomStream):
 
         # default to parent class for initial request
         return super().get_url_params(context, next_page_token)
+
+    def post_process(
+        self,
+        row: dict,
+        context: dict | None = None,  # noqa: ARG002
+    ) -> dict | None:
+        """As needed, append or transform raw data to match expected structure.
+
+        Args:
+            row: Individual record in the stream.
+            context: Stream partition or context dictionary.
+
+        Returns:
+            The resulting record dict, or `None` if the record should be excluded.
+        """
+        if row.get("translated_content").get("pt-BR"):
+            # replace dashes with underscores to avoid db issues
+            row["translated_content"]["pt_br"] = row["translated_content"].pop("pt-BR")
+
+        return row
