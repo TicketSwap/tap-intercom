@@ -145,16 +145,38 @@ class IntercomStream(RESTStream):
             }
         return row
     
-    def get_new_paginator(self):
+    def get_new_paginator(self) -> JSONPathPaginator:
+        """Return a new paginator instance for the stream.
+
+        Returns:
+            JSONPathPaginator: Paginator for handling paginated API responses.
+        """
         return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
 
 
 class IntercomHATEOASPaginator(BaseHATEOASPaginator):
-    def get_next_url(self, response):
+    """Paginator class for Intercom API using HATEOAS links."""
+    
+    def get_next_url(self, response: requests.Response) -> str | None:
+        """Extract the next page URL from the API response.
+
+        Args:
+            response: The HTTP response object.
+
+        Returns:
+            The next page URL as a string, or None if there is no next page.
+        """
         return response.json().get('pages').get('next')
     
-    def has_more(self, response) -> bool:
+    def has_more(self, response: requests.Response) -> bool:
+        """Determine if there are more pages to fetch.
+
+        Args:
+            response: The HTTP response object.
+
+        Returns:
+            True if there are more pages, False otherwise.
+        """
         return self.get_next_url(response) is not None
-    
-    
-    
+
+

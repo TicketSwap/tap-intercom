@@ -95,6 +95,7 @@ class ContactsStream(IntercomStream):
     http_method = "POST"
     schema = contacts_schema
 
+
 class ArticlesStream(IntercomStream):
     """Stream for Intercom articles."""
 
@@ -103,15 +104,33 @@ class ArticlesStream(IntercomStream):
     records_jsonpath = "$.data.articles[*]"
     schema = articles_schema
 
-    # uses different pagination, overrida default
-    def get_new_paginator(self):
+    def get_new_paginator(self) -> IntercomHATEOASPaginator:
+        """Return a new paginator instance for the articles stream.
+
+        Returns:
+            IntercomHATEOASPaginator: Paginator for handling paginated API responses.
+        """
         return IntercomHATEOASPaginator()
 
-    def get_url_params(self, context, next_page_token):
+    def get_url_params(
+        self,
+        context: dict | None,
+        next_page_token: object,
+    ) -> dict:
+        """Return URL params for the request.
+
+        Args:
+            context: Stream partition or context dictionary.
+            next_page_token: Token for next page of data.
+
+        Returns:
+            Dictionary of URL parameters.
+        """
         params = {}
-        
         if next_page_token:
-            params.update(parse_qsl(next_page_token.query))
+            # parse URL for next page
+            params.update(dict(parse_qsl(next_page_token.query)))
             return params
         else:
+            # default to parent class for initial request
             return super().get_url_params(context, next_page_token)
