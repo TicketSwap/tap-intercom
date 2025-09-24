@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import typing as t
+from urllib.parse import parse_qsl
 
-from tap_intercom.client import IntercomStream
+from tap_intercom.client import IntercomHATEOASPaginator, IntercomStream
 from tap_intercom.schemas import (
     admins_schema,
     articles_schema,
@@ -92,9 +93,42 @@ class ContactsStream(IntercomStream):
     http_method = "POST"
     schema = contacts_schema
 
+
 class ArticlesStream(IntercomStream):
     """Stream for Intercom articles."""
 
     name = "articles"
-    path = "/articles"
+    path = "/articles/search"
+    records_jsonpath = "$.data.articles[*]"
     schema = articles_schema
+
+    def get_new_paginator(self) -> IntercomHATEOASPaginator:
+        """Return a new paginator instance for the articles stream.
+
+        Returns:
+            IntercomHATEOASPaginator: Paginator for handling paginated API responses.
+        """
+        return IntercomHATEOASPaginator()
+
+    def get_url_params(
+        self,
+        context: dict | None,
+        next_page_token: object,
+    ) -> dict:
+        """Return URL params for the request.
+
+        Args:
+            context: Stream partition or context dictionary.
+            next_page_token: Token for next page of data.
+
+        Returns:
+            Dictionary of URL parameters.
+        """
+        params = {}
+        if next_page_token:
+            # parse URL for next page
+            params.update(dict(parse_qsl(next_page_token.query)))
+            return params
+
+        # default to parent class for initial request
+        return super().get_url_params(context, next_page_token)

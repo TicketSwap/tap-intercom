@@ -2,16 +2,17 @@
 
 from __future__ import annotations
 
-import typing
+import typing as t
 from pathlib import Path
 from typing import Callable
 
 import requests
 from singer_sdk.authenticators import BearerTokenAuthenticator
+from singer_sdk.pagination import BaseHATEOASPaginator, JSONPathPaginator
 from singer_sdk.streams import RESTStream
 
-T = typing.TypeVar("T")
-TPageToken = typing.TypeVar("TPageToken")
+T = t.TypeVar("T")
+TPageToken = t.TypeVar("TPageToken")
 
 _Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
@@ -20,9 +21,8 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class IntercomStream(RESTStream):
     """Intercom stream class."""
 
-    primary_keys: typing.ClassVar[list[str]] = ["id"]
+    primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.data[*]"
-    next_page_token_jsonpath = "$.pages.next.starting_after"  # noqa: S105
 
     @property
     def url_base(self) -> str:
@@ -53,7 +53,7 @@ class IntercomStream(RESTStream):
         if user_agent:
             result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
-        result["Intercom-Version"] = "2.11"
+        result["Intercom-Version"] = "2.14"
         return result
 
     def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
@@ -144,3 +144,37 @@ class IntercomStream(RESTStream):
                 key.lower().replace(" ", "_"): value for key, value in row["custom_attributes"].items()
             }
         return row
+
+    def get_new_paginator(self) -> JSONPathPaginator:
+        """Return a new paginator instance for the stream.
+
+        Returns:
+            JSONPathPaginator: Paginator for handling paginated API responses.
+        """
+        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
+
+
+class IntercomHATEOASPaginator(BaseHATEOASPaginator):
+    """Paginator class for Intercom API using HATEOAS links."""
+
+    def get_next_url(self, response: requests.Response) -> str | None:
+        """Extract the next page URL from the API response.
+
+        Args:
+            response: The HTTP response object.
+
+        Returns:
+            The next page URL as a string, or None if there is no next page.
+        """
+        return response.json().get("pages").get("next")
+
+    def has_more(self, response: requests.Response) -> bool:
+        """Determine if there are more pages to fetch.
+
+        Args:
+            response: The HTTP response object.
+
+        Returns:
+            True if there are more pages, False otherwise.
+        """
+        return self.get_next_url(response) is not None
