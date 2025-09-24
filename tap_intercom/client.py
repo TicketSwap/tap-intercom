@@ -4,18 +4,16 @@ from __future__ import annotations
 
 import typing as t
 from pathlib import Path
-from typing import Callable
 
-import requests
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.pagination import BaseHATEOASPaginator, JSONPathPaginator
 from singer_sdk.streams import RESTStream
 
+if t.TYPE_CHECKING:
+    import requests
+
 T = t.TypeVar("T")
 TPageToken = t.TypeVar("TPageToken")
-
-_Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
-SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
 
 class IntercomStream(RESTStream):
@@ -32,11 +30,7 @@ class IntercomStream(RESTStream):
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
         """Return the authenticator."""
-        access_token = self.config.get("access_token")
-        if not access_token:
-            msg = "Access token is required"
-            raise ValueError(msg)
-        return BearerTokenAuthenticator.create_for_stream(self, token=access_token)
+        return BearerTokenAuthenticator(token=self.config["access_token"])
 
     @property
     def http_headers(self) -> dict:
