@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import typing as t
-
-from singer_sdk.pagination import JSONPathPaginator
 from urllib.parse import parse_qsl
 
-from tap_intercom.client import IntercomStream, IntercomHATEOASPaginator
+from tap_intercom.client import IntercomHATEOASPaginator, IntercomStream
 from tap_intercom.schemas import (
     admins_schema,
     articles_schema,
@@ -131,6 +129,6 @@ class ArticlesStream(IntercomStream):
             # parse URL for next page
             params.update(dict(parse_qsl(next_page_token.query)))
             return params
-        else:
-            # default to parent class for initial request
-            return super().get_url_params(context, next_page_token)
+
+        # default to parent class for initial request
+        return super().get_url_params(context, next_page_token)

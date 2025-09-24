@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-import typing
+import typing as t
 from pathlib import Path
 from typing import Callable
 
 import requests
 from singer_sdk.authenticators import BearerTokenAuthenticator
-from singer_sdk.streams import RESTStream
 from singer_sdk.pagination import BaseHATEOASPaginator, JSONPathPaginator
+from singer_sdk.streams import RESTStream
 
-T = typing.TypeVar("T")
-TPageToken = typing.TypeVar("TPageToken")
+T = t.TypeVar("T")
+TPageToken = t.TypeVar("TPageToken")
 
 _Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
@@ -21,7 +21,7 @@ SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 class IntercomStream(RESTStream):
     """Intercom stream class."""
 
-    primary_keys: typing.ClassVar[list[str]] = ["id"]
+    primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.data[*]"
 
     @property
@@ -144,7 +144,7 @@ class IntercomStream(RESTStream):
                 key.lower().replace(" ", "_"): value for key, value in row["custom_attributes"].items()
             }
         return row
-    
+
     def get_new_paginator(self) -> JSONPathPaginator:
         """Return a new paginator instance for the stream.
 
@@ -156,7 +156,7 @@ class IntercomStream(RESTStream):
 
 class IntercomHATEOASPaginator(BaseHATEOASPaginator):
     """Paginator class for Intercom API using HATEOAS links."""
-    
+
     def get_next_url(self, response: requests.Response) -> str | None:
         """Extract the next page URL from the API response.
 
@@ -166,8 +166,8 @@ class IntercomHATEOASPaginator(BaseHATEOASPaginator):
         Returns:
             The next page URL as a string, or None if there is no next page.
         """
-        return response.json().get('pages').get('next')
-    
+        return response.json().get("pages").get("next")
+
     def has_more(self, response: requests.Response) -> bool:
         """Determine if there are more pages to fetch.
 
@@ -178,5 +178,3 @@ class IntercomHATEOASPaginator(BaseHATEOASPaginator):
             True if there are more pages, False otherwise.
         """
         return self.get_next_url(response) is not None
-
-
