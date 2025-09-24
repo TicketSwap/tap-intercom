@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import typing as t
-from pathlib import Path
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.pagination import BaseHATEOASPaginator, JSONPathPaginator
