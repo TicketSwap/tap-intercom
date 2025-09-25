@@ -55,6 +55,8 @@ class ConversationPartsStream(IntercomStream):
             The resulting record dict, or `None` if the record should be excluded.
         """
         row["conversation_id"] = context["conversation_id"]
+        row["has_attachments"] = len(row.get("attachments")) > 0
+
         return row
 
 
