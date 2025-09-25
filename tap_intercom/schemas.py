@@ -41,7 +41,8 @@ translated_content = [
             Property("created_at", IntegerType),
             Property("updated_at", IntegerType),
         ),
-    ) for lang in languages
+    )
+    for lang in languages
 ]
 
 conversations_schema = PropertiesList(
@@ -304,7 +305,7 @@ conversations_schema = PropertiesList(
                                     ObjectType(
                                         Property("eventId", StringType),
                                         Property("eventTitle", StringType),
-                                        Property("amount", StringType), # includes currency sign
+                                        Property("amount", StringType),  # includes currency sign
                                         Property("predictedArrivalAt", StringType),
                                         Property("state", StringType),
                                         Property("stateLabel", StringType),
@@ -368,19 +369,20 @@ conversation_parts_schema = PropertiesList(
             )
         ),
     ),
+    Property("has_attachments", BooleanType),
     Property("external_id", StringType),
     Property("redacted", BooleanType),
     Property(
         "conversation_part_has_body",
         BooleanType,
-        description = (
+        description=(
             "Indicates whether this conversation part contains a non-empty body. "
             "True if the body field is present and not empty, false otherwise."
         ),
     ),
 ).to_dict()
 
-admins_schema =  PropertiesList(
+admins_schema = PropertiesList(
     Property("id", StringType),
     Property("name", StringType),
     Property("away_mode_enabled", BooleanType),
@@ -467,9 +469,7 @@ contacts_schema = PropertiesList(
             Property("city", StringType, description="The city of the contact's location"),
             Property("country", StringType, description="The country of the contact's location"),
             Property("region", StringType, description="The region of the contact's location"),
-            Property(
-                "country_code", StringType, description="The ISO 3166-1 country code of the contact's location"
-            ),
+            Property("country_code", StringType, description="The ISO 3166-1 country code of the contact's location"),
         ),
         description="An object containing location meta data about a Intercom contact.",
     ),
