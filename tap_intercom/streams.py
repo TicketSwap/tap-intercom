@@ -6,8 +6,6 @@ import decimal
 import typing as t
 from urllib.parse import parse_qsl
 
-import requests
-
 from tap_intercom.client import IntercomHATEOASPaginator, IntercomStream
 from tap_intercom.schemas import (
     admins_schema,
@@ -19,6 +17,9 @@ from tap_intercom.schemas import (
     tags_schema,
     teams_schema,
 )
+
+if t.TYPE_CHECKING:
+    import requests
 
 
 class ConversationsStream(IntercomStream):
