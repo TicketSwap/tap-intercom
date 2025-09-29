@@ -4,6 +4,7 @@ from singer_sdk.typing import (
     ArrayType,
     BooleanType,
     IntegerType,
+    NumberType,
     ObjectType,
     PropertiesList,
     Property,
@@ -41,7 +42,8 @@ translated_content = [
             Property("created_at", IntegerType),
             Property("updated_at", IntegerType),
         ),
-    ) for lang in languages
+    )
+    for lang in languages
 ]
 
 conversations_schema = PropertiesList(
@@ -304,7 +306,7 @@ conversations_schema = PropertiesList(
                                     ObjectType(
                                         Property("eventId", StringType),
                                         Property("eventTitle", StringType),
-                                        Property("amount", StringType), # includes currency sign
+                                        Property("amount", StringType),  # includes currency sign
                                         Property("predictedArrivalAt", StringType),
                                         Property("state", StringType),
                                         Property("stateLabel", StringType),
@@ -373,14 +375,14 @@ conversation_parts_schema = PropertiesList(
     Property(
         "conversation_part_has_body",
         BooleanType,
-        description = (
+        description=(
             "Indicates whether this conversation part contains a non-empty body. "
             "True if the body field is present and not empty, false otherwise."
         ),
     ),
 ).to_dict()
 
-admins_schema =  PropertiesList(
+admins_schema = PropertiesList(
     Property("id", StringType),
     Property("name", StringType),
     Property("away_mode_enabled", BooleanType),
@@ -467,9 +469,7 @@ contacts_schema = PropertiesList(
             Property("city", StringType, description="The city of the contact's location"),
             Property("country", StringType, description="The country of the contact's location"),
             Property("region", StringType, description="The region of the contact's location"),
-            Property(
-                "country_code", StringType, description="The ISO 3166-1 country code of the contact's location"
-            ),
+            Property("country_code", StringType, description="The ISO 3166-1 country code of the contact's location"),
         ),
         description="An object containing location meta data about a Intercom contact.",
     ),
@@ -549,15 +549,55 @@ articles_schema = PropertiesList(
     Property("body", StringType),
     Property("author_id", IntegerType),
     Property("state", StringType),
+    Property("created_at", IntegerType),
+    Property("updated_at", IntegerType),
+).to_dict()
+
+articles_extended_schema = PropertiesList(
+    Property("id", StringType),
+    Property("parent_type", StringType),
+    Property("parent_ids", ArrayType(IntegerType)),
+    Property(
+        "translated_content",
+        ObjectType(*translated_content),
+    ),
+    Property("languages", ArrayType(StringType)),
+    Property(
+        "tags",
+        ObjectType(
+            Property(
+                "tags",
+                ArrayType(
+                    ObjectType(
+                        Property("id", StringType),
+                        Property("name", StringType),
+                        Property("applied_at", IntegerType),
+                        Property(
+                            "applied_by",
+                            ObjectType(
+                                Property("type", StringType),
+                                Property("id", StringType),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    Property("title", StringType),
+    Property("description", StringType),
+    Property("body", StringType),
+    Property("author_id", IntegerType),
+    Property("state", StringType),
     Property(
         "statistics",
         ObjectType(
             Property("views", IntegerType),
             Property("conversions", IntegerType),
             Property("reactions", IntegerType),
-            Property("happy_reaction_percentage", IntegerType),
-            Property("neutral_reaction_percentage", IntegerType),
-            Property("sad_reaction_percentage", IntegerType),
+            Property("happy_reaction_percentage", NumberType),
+            Property("neutral_reaction_percentage", NumberType),
+            Property("sad_reaction_percentage", NumberType),
         ),
     ),
     Property("created_at", IntegerType),
