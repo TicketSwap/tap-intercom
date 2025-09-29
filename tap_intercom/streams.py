@@ -142,7 +142,7 @@ class ArticlesStream(IntercomStream):
 
 
 class ArticlesExtendedStream(IntercomStream):
-    """Stream for Intercom articles."""
+    """Stream providing extended article data, including statistics, for individual Intercom articles."""
 
     name = "articles_extended"
     path = "/articles/{article_id}"
