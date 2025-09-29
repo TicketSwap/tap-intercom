@@ -4,6 +4,7 @@ from singer_sdk.typing import (
     ArrayType,
     BooleanType,
     IntegerType,
+    NumberType,
     ObjectType,
     PropertiesList,
     Property,
@@ -556,15 +557,55 @@ articles_schema = PropertiesList(
     Property("body", StringType),
     Property("author_id", IntegerType),
     Property("state", StringType),
+    Property("created_at", IntegerType),
+    Property("updated_at", IntegerType),
+).to_dict()
+
+articles_extended_schema = PropertiesList(
+    Property("id", StringType),
+    Property("parent_type", StringType),
+    Property("parent_ids", ArrayType(IntegerType)),
+    Property(
+        "translated_content",
+        ObjectType(*translated_content),
+    ),
+    Property("languages", ArrayType(StringType)),
+    Property(
+        "tags",
+        ObjectType(
+            Property(
+                "tags",
+                ArrayType(
+                    ObjectType(
+                        Property("id", StringType),
+                        Property("name", StringType),
+                        Property("applied_at", IntegerType),
+                        Property(
+                            "applied_by",
+                            ObjectType(
+                                Property("type", StringType),
+                                Property("id", StringType),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    Property("title", StringType),
+    Property("description", StringType),
+    Property("body", StringType),
+    Property("author_id", IntegerType),
+    Property("state", StringType),
     Property(
         "statistics",
         ObjectType(
             Property("views", IntegerType),
             Property("conversions", IntegerType),
             Property("reactions", IntegerType),
-            Property("happy_reaction_percentage", IntegerType),
-            Property("neutral_reaction_percentage", IntegerType),
-            Property("sad_reaction_percentage", IntegerType),
+            Property("happy_reaction_percentage", NumberType),
+            Property("neutral_reaction_percentage", NumberType),
+            Property("sad_reaction_percentage", NumberType),
         ),
     ),
     Property("created_at", IntegerType),

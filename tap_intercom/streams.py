@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import decimal
 import typing as t
 from urllib.parse import parse_qsl
 
 from tap_intercom.client import IntercomHATEOASPaginator, IntercomStream
 from tap_intercom.schemas import (
     admins_schema,
+    articles_extended_schema,
     articles_schema,
     contacts_schema,
     conversation_parts_schema,
@@ -15,6 +17,9 @@ from tap_intercom.schemas import (
     tags_schema,
     teams_schema,
 )
+
+if t.TYPE_CHECKING:
+    import requests
 
 
 class ConversationsStream(IntercomStream):
@@ -98,8 +103,8 @@ class ArticlesStream(IntercomStream):
     """Stream for Intercom articles."""
 
     name = "articles"
-    path = "/articles/search"
-    records_jsonpath = "$.data.articles[*]"
+    path = "/articles"
+    records_jsonpath = "$.data[*]"
     schema = articles_schema
 
     def get_new_paginator(self) -> IntercomHATEOASPaginator:
@@ -124,11 +129,34 @@ class ArticlesStream(IntercomStream):
         Returns:
             Dictionary of URL parameters.
         """
-        params = {}
+        params = super().get_url_params(context, next_page_token)
         if next_page_token:
             # parse URL for next page
             params.update(dict(parse_qsl(next_page_token.query)))
-            return params
 
-        # default to parent class for initial request
-        return super().get_url_params(context, next_page_token)
+        return params
+
+    def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
+        """Return a context dictionary for child streams."""
+        return {"article_id": record["id"]}
+
+
+class ArticlesExtendedStream(IntercomStream):
+    """Stream providing extended article data, including statistics, for individual Intercom articles."""
+
+    name = "articles_extended"
+    path = "/articles/{article_id}"
+    records_jsonpath = "$"
+    schema = articles_extended_schema
+    parent_stream_type = ArticlesStream
+
+    def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
+        """Parse the response and return an iterator of result records.
+
+        Args:
+            response: A raw :class:`requests.Response`
+
+        Yields:
+            One item for every item found in the response.
+        """
+        yield response.json(parse_float=decimal.Decimal)
