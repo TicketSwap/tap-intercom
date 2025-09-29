@@ -149,6 +149,7 @@ class ArticlesExtendedStream(IntercomStream):
     records_jsonpath = "$"
     schema = articles_extended_schema
     parent_stream_type = ArticlesStream
+    state_partitioning_keys: t.ClassVar[list[str]] = []
 
     def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
         """Parse the response and return an iterator of result records.
