@@ -146,7 +146,7 @@ class ArticlesExtendedStream(IntercomStream):
 
     name = "articles_extended"
     path = "/articles/{article_id}"
-    records_jsonpath = "$.*"
+    records_jsonpath = "$"
     schema = articles_extended_schema
     parent_stream_type = ArticlesStream
 
