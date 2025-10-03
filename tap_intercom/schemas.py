@@ -391,12 +391,17 @@ conversation_parts_schema = PropertiesList(
 ).to_dict()
 
 admins_schema = PropertiesList(
+    Property("type", StringType),
     Property("id", StringType),
     Property("name", StringType),
+    Property("email", StringType),
+    Property("job_title", StringType),
     Property("away_mode_enabled", BooleanType),
     Property("away_mode_reassign", BooleanType),
+    Property("away_status_reason_id", IntegerType),
     Property("has_inbox_seat", BooleanType),
     Property("team_ids", ArrayType(IntegerType)),
+    Property("avatar", StringType),
     Property(
         "team_priority_level",
         ObjectType(

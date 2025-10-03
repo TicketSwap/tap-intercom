@@ -18,8 +18,16 @@ from tap_intercom.schemas import (
     teams_schema,
 )
 
+from typing import ClassVar
+
 if t.TYPE_CHECKING:
     import requests
+
+from singer_sdk import OpenAPISchema, StreamSchema
+
+openapi_source = OpenAPISchema(
+    "https://developers.intercom.com/_spec/docs/references/@2.14/rest-api/api.intercom.io.json"
+)
 
 
 class ConversationsStream(IntercomStream):
@@ -30,7 +38,7 @@ class ConversationsStream(IntercomStream):
     replication_key = "updated_at"
     records_jsonpath = "$.conversations[*]"
     http_method = "POST"
-    schema = conversations_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="conversation")
 
     def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
@@ -47,7 +55,7 @@ class ConversationPartsStream(IntercomStream):
     primary_keys: t.ClassVar[list[str]] = ["id"]
     replication_key = "updated_at"
     records_jsonpath = "$.conversation_parts.conversation_parts[*]"
-    schema = conversation_parts_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="conversation_part")
 
     def post_process(self, row: dict, context: dict | None = None) -> dict | None:
         """As needed, append or transform raw data to match expected structure.
@@ -69,7 +77,7 @@ class AdminsStream(IntercomStream):
     name = "admins"
     path = "/admins"
     records_jsonpath = "$.admins[*]"
-    schema = admins_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="admin")
 
 
 class TagsStream(IntercomStream):
@@ -77,7 +85,7 @@ class TagsStream(IntercomStream):
 
     name = "tags"
     path = "/tags"
-    schema = tags_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="tag")
 
 
 class TeamsStream(IntercomStream):
@@ -86,7 +94,7 @@ class TeamsStream(IntercomStream):
     name = "teams"
     path = "/teams"
     records_jsonpath = "$.teams[*]"
-    schema = teams_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="team")
 
 
 class ContactsStream(IntercomStream):
@@ -96,7 +104,7 @@ class ContactsStream(IntercomStream):
     path = "/contacts/search"
     replication_key = "updated_at"
     http_method = "POST"
-    schema = contacts_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="contact")
 
 
 class ArticlesStream(IntercomStream):
@@ -105,7 +113,7 @@ class ArticlesStream(IntercomStream):
     name = "articles"
     path = "/articles"
     records_jsonpath = "$.data[*]"
-    schema = articles_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="article")
 
     def get_new_paginator(self) -> IntercomHATEOASPaginator:
         """Return a new paginator instance for the articles stream.
@@ -147,7 +155,7 @@ class ArticlesExtendedStream(IntercomStream):
     name = "articles_extended"
     path = "/articles/{article_id}"
     records_jsonpath = "$"
-    schema = articles_extended_schema
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="article")
     parent_stream_type = ArticlesStream
     state_partitioning_keys: t.ClassVar[list[str]] = []
 
