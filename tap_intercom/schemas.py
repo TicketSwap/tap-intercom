@@ -87,12 +87,14 @@ conversations_schema = PropertiesList(
     Property(
         "conversation_rating",
         ObjectType(
+            Property("updated_at", IntegerType),
             Property("rating", IntegerType),
             Property("remark", StringType),
             Property("created_at", IntegerType),
             Property(
                 "contact",
                 ObjectType(
+                    Property("external_id", StringType),
                     Property("type", StringType),
                     Property("id", StringType),
                 ),
@@ -161,6 +163,7 @@ conversations_schema = PropertiesList(
         "teammates",
         ObjectType(
             Property("type", StringType),
+            Property("admins", ArrayType(IntegerType)),
             Property(
                 "teammates",
                 ArrayType(
@@ -183,6 +186,7 @@ conversations_schema = PropertiesList(
     Property(
         "sla_applied",
         ObjectType(
+            Property("type", StringType),
             Property("sla_name", StringType),
             Property("sla_status", StringType),
         ),
@@ -190,6 +194,10 @@ conversations_schema = PropertiesList(
     Property(
         "statistics",
         ObjectType(
+            Property("type", StringType),
+            Property("assigned_team_first_response_time", IntegerType),
+            Property("assigned_team_first_response_time_in_office_hours", IntegerType),
+            Property("handling_time", IntegerType),
             Property("time_to_assignment", IntegerType),
             Property("time_to_admin_reply", IntegerType),
             Property("time_to_first_close", IntegerType),
@@ -316,6 +324,9 @@ conversations_schema = PropertiesList(
     Property(
         "custom_attributes",
         ObjectType(
+            Property("copilot_used", BooleanType),
+            Property("brand", StringType),
+            Property("has_attachments", BooleanType),
             Property(
                 "active_draft",
                 ObjectType(
@@ -503,6 +514,7 @@ conversation_parts_schema = PropertiesList(
                 ),
             ),
             Property("quick_reply_uuid", StringType),
+            Property("quick_reply_option_uuid", StringType),
         ),
     ),
     Property("state", StringType),
@@ -516,7 +528,36 @@ conversation_parts_schema = PropertiesList(
             )
         ),
     ),
-    Property("event_details", ObjectType()),
+    Property(
+        "event_details",
+        ObjectType(
+            Property(
+                "attribute",
+                ObjectType(
+                    Property("name", StringType),
+                ),
+            ),
+            Property(
+                "workflow",
+                ObjectType(
+                    Property("name", StringType),
+                ),
+            ),
+            Property(
+                "value",
+                ObjectType(
+                    Property("name", StringType),
+                ),
+            ),
+            Property(
+                "event",
+                ObjectType(
+                    Property("type", StringType),
+                    Property("result", StringType),
+                ),
+            ),
+        ),
+    ),
     Property("app_package_code", StringType),
 ).to_dict()
 
