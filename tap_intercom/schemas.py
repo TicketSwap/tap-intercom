@@ -195,8 +195,22 @@ conversations_schema = PropertiesList(
         "statistics",
         ObjectType(
             Property("type", StringType),
-            Property("assigned_team_first_response_time", IntegerType),
-            Property("assigned_team_first_response_time_in_office_hours", IntegerType),
+            Property(
+                "assigned_team_first_response_time",
+                ObjectType(
+                    Property("team_id", IntegerType),
+                    Property("team_name", StringType),
+                    Property("response_time", IntegerType),
+                ),
+            ),
+            Property(
+                "assigned_team_first_response_time_in_office_hours",
+                ObjectType(
+                    Property("team_id", IntegerType),
+                    Property("team_name", StringType),
+                    Property("response_time", IntegerType),
+                ),
+            ),
             Property("handling_time", IntegerType),
             Property("time_to_assignment", IntegerType),
             Property("time_to_admin_reply", IntegerType),
