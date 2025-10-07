@@ -4,26 +4,16 @@ from __future__ import annotations
 
 import decimal
 import typing as t
+from typing import ClassVar
 from urllib.parse import parse_qsl
 
-from tap_intercom.client import IntercomHATEOASPaginator, IntercomStream
-from tap_intercom.schemas import (
-    admins_schema,
-    articles_extended_schema,
-    articles_schema,
-    contacts_schema,
-    conversation_parts_schema,
-    conversations_schema,
-    tags_schema,
-    teams_schema,
-)
+from singer_sdk import OpenAPISchema, StreamSchema
 
-from typing import ClassVar
+from tap_intercom.client import IntercomHATEOASPaginator, IntercomStream
 
 if t.TYPE_CHECKING:
     import requests
 
-from singer_sdk import OpenAPISchema, StreamSchema
 
 openapi_source = OpenAPISchema(
     "https://developers.intercom.com/_spec/docs/references/@2.14/rest-api/api.intercom.io.json"
@@ -113,7 +103,7 @@ class ArticlesStream(IntercomStream):
     name = "articles"
     path = "/articles"
     records_jsonpath = "$.data[*]"
-    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="article")
+    schema: ClassVar[StreamSchema] = StreamSchema(openapi_source, key="article_list_item")
 
     def get_new_paginator(self) -> IntercomHATEOASPaginator:
         """Return a new paginator instance for the articles stream.
