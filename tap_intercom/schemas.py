@@ -471,6 +471,8 @@ conversation_parts_schema = PropertiesList(
     ),
     Property("external_id", StringType),
     Property("redacted", BooleanType),
+    Property("conversation_part_has_body", BooleanType),
+    Property("conversation_part_has_attachments", BooleanType),
     Property(
         "email_message_metadata",
         ObjectType(
@@ -722,6 +724,12 @@ contacts_schema = PropertiesList(
             Property("job_title", StringType),
             Property("last_payout_state_description", StringType),
             Property("is_intersection_booted", BooleanType),
+            Property("email", StringType),
+            Property("hasgivenmarketingpushconsent", BooleanType),
+            Property("hasgivenmarketingemailconsent", BooleanType),
+            Property("octopods_messagebird_whatsapp_account_phone", StringType),
+            Property("octopods_channel", StringType),
+            Property("isreceivingemailnotifications", BooleanType),
         ),
     ),
 ).to_dict()
