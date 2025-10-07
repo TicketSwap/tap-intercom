@@ -579,6 +579,7 @@ contacts_schema = PropertiesList(
     Property(
         "social_profiles",
         ObjectType(
+            Property("type", StringType),
             Property(
                 "data",
                 ArrayType(
@@ -588,7 +589,7 @@ contacts_schema = PropertiesList(
                         Property("url", StringType),
                     )
                 ),
-            )
+            ),
         ),
     ),
     Property("has_hard_bounced", BooleanType),
@@ -688,7 +689,26 @@ contacts_schema = PropertiesList(
             Property("has_more", BooleanType),
         ),
     ),
-    Property("custom_attributes", ObjectType()),
+    Property(
+        "custom_attributes",
+        ObjectType(
+            Property("preferred_language", StringType),
+            Property("countrycode", StringType),
+            Property("hascartitems", BooleanType),
+            Property("isuserverified", BooleanType),
+            Property("isabletosell", BooleanType),
+            Property("anonymousid", StringType),
+            Property("is_phone_verified", BooleanType),
+            Property("userid", StringType),
+            Property("id", StringType),
+            Property("country_code", StringType),
+            Property("haspayoutmethodsetup", BooleanType),
+            Property("is_employee", BooleanType),
+            Property("is_new_profile", BooleanType),
+            Property("display_name", StringType),
+            Property("verification_id", StringType),
+        ),
+    ),
 ).to_dict()
 
 articles_schema = PropertiesList(
