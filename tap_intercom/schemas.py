@@ -524,6 +524,13 @@ admins_schema = PropertiesList(
     Property("name", StringType),
     Property("email", StringType),
     Property("job_title", StringType),
+    Property(
+        "team_priority_level",
+        ObjectType(
+            Property("primary_team_ids", ArrayType(IntegerType)),
+            Property("secondary_team_ids", ArrayType(IntegerType)),
+        ),
+    ),
     Property("away_mode_enabled", BooleanType),
     Property("away_mode_reassign", BooleanType),
     Property("has_inbox_seat", BooleanType),
