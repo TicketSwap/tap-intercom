@@ -132,8 +132,8 @@ conversations_schema = PropertiesList(
                         Property("url", StringType),
                         Property("content_type", StringType),
                         Property("filesize", IntegerType),
-                        Property("width", IntegerType),
-                        Property("height", IntegerType),
+                        Property("width", StringType),
+                        Property("height", StringType),
                     )
                 ),
             ),
@@ -204,7 +204,7 @@ conversations_schema = PropertiesList(
             Property("last_contact_reply_at", IntegerType),
             Property("last_admin_reply_at", IntegerType),
             Property("last_close_at", IntegerType),
-            Property("last_closed_by_id", StringType),
+            Property("last_closed_by_id", IntegerType),
             Property("count_reopens", IntegerType),
             Property("count_assignments", IntegerType),
             Property("count_conversation_parts", IntegerType),
@@ -251,8 +251,8 @@ conversations_schema = PropertiesList(
                                     Property("url", StringType),
                                     Property("content_type", StringType),
                                     Property("filesize", IntegerType),
-                                    Property("width", IntegerType),
-                                    Property("height", IntegerType),
+                                    Property("width", StringType),
+                                    Property("height", StringType),
                                 )
                             ),
                         ),
@@ -464,8 +464,8 @@ conversation_parts_schema = PropertiesList(
                 Property("url", StringType),
                 Property("content_type", StringType),
                 Property("filesize", IntegerType),
-                Property("width", IntegerType),
-                Property("height", IntegerType),
+                Property("width", StringType),
+                Property("height", StringType),
             )
         ),
     ),
@@ -527,7 +527,7 @@ admins_schema = PropertiesList(
     Property("away_mode_enabled", BooleanType),
     Property("away_mode_reassign", BooleanType),
     Property("has_inbox_seat", BooleanType),
-    Property("team_ids", ArrayType(StringType)),
+    Property("team_ids", ArrayType(IntegerType)),
     Property(
         "avatar",
         ObjectType(
