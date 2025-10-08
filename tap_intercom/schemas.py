@@ -214,6 +214,7 @@ conversations_schema = PropertiesList(
                         Property("response_time", IntegerType),
                     )
                 ),
+            ),
             Property("handling_time", IntegerType),
             Property("time_to_assignment", IntegerType),
             Property("time_to_admin_reply", IntegerType),
