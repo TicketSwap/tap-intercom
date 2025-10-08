@@ -197,20 +197,23 @@ conversations_schema = PropertiesList(
             Property("type", StringType),
             Property(
                 "assigned_team_first_response_time",
-                ObjectType(
-                    Property("team_id", IntegerType),
-                    Property("team_name", StringType),
-                    Property("response_time", IntegerType),
+                ArrayType(
+                    ObjectType(
+                        Property("team_id", IntegerType),
+                        Property("team_name", StringType),
+                        Property("response_time", IntegerType),
+                    )
                 ),
             ),
             Property(
                 "assigned_team_first_response_time_in_office_hours",
-                ObjectType(
-                    Property("team_id", IntegerType),
-                    Property("team_name", StringType),
-                    Property("response_time", IntegerType),
+                ArrayType(
+                    ObjectType(
+                        Property("team_id", IntegerType),
+                        Property("team_name", StringType),
+                        Property("response_time", IntegerType),
+                    )
                 ),
-            ),
             Property("handling_time", IntegerType),
             Property("time_to_assignment", IntegerType),
             Property("time_to_admin_reply", IntegerType),
@@ -338,6 +341,9 @@ conversations_schema = PropertiesList(
     Property(
         "custom_attributes",
         ObjectType(
+            Property("auto-translated", BooleanType),
+            Property("fin_ai_agent:_preview_mode", BooleanType),
+            Property("probleem_met_de_vermelding", StringType),
             Property("copilot_used", BooleanType),
             Property("brand", StringType),
             Property("has_attachments", BooleanType),
@@ -372,6 +378,7 @@ conversations_schema = PropertiesList(
             Property(
                 "latest_bought_listings",
                 ObjectType(
+                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -394,6 +401,7 @@ conversations_schema = PropertiesList(
             Property(
                 "selected_bought_listing",
                 ObjectType(
+                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -416,6 +424,7 @@ conversations_schema = PropertiesList(
             Property(
                 "last_payout",
                 ObjectType(
+                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -546,6 +555,13 @@ conversation_parts_schema = PropertiesList(
         "event_details",
         ObjectType(
             Property(
+                "action",
+                ObjectType(
+                    Property("name", StringType),
+                    Property("result", StringType),
+                ),
+            ),
+            Property(
                 "attribute",
                 ObjectType(
                     Property("name", StringType),
@@ -554,6 +570,7 @@ conversation_parts_schema = PropertiesList(
             Property(
                 "workflow",
                 ObjectType(
+                    Property("group_title", StringType),
                     Property("name", StringType),
                 ),
             ),
