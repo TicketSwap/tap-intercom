@@ -31,6 +31,7 @@ class ConversationsStream(IntercomStream):
     records_jsonpath = "$.conversations[*]"
     http_method = "POST"
     schema = conversations_schema
+    is_sorted = True
 
     def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
