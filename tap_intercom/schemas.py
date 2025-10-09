@@ -163,7 +163,15 @@ conversations_schema = PropertiesList(
         "teammates",
         ObjectType(
             Property("type", StringType),
-            Property("admins", ArrayType(IntegerType)),
+            Property(
+                "admins",
+                ArrayType(
+                    ObjectType(
+                        Property("type", StringType),
+                        Property("id", StringType),
+                    ),
+                ),
+            ),
             Property(
                 "teammates",
                 ArrayType(
@@ -201,7 +209,7 @@ conversations_schema = PropertiesList(
                     ObjectType(
                         Property("team_id", IntegerType),
                         Property("team_name", StringType),
-                        Property("response_time", IntegerType),
+                        Property("response_time", NumberType),
                     )
                 ),
             ),
@@ -211,7 +219,7 @@ conversations_schema = PropertiesList(
                     ObjectType(
                         Property("team_id", IntegerType),
                         Property("team_name", StringType),
-                        Property("response_time", IntegerType),
+                        Property("response_time", NumberType),
                     )
                 ),
             ),
