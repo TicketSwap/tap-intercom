@@ -723,7 +723,6 @@ contacts_schema = PropertiesList(
     Property("ios_os_version", StringType),
     Property("ios_sdk_version", StringType),
     Property("ios_last_seen_at", IntegerType),
-    Property("custom_attributes", ObjectType()),
     Property(
         "tags",
         ObjectType(
