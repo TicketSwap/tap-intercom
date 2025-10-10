@@ -350,6 +350,8 @@ conversations_schema = PropertiesList(
     Property(
         "custom_attributes",
         ObjectType(
+            Property("imported_via_standalone", BooleanType),
+            Property("fin_ai_agent:_preview", BooleanType),
             Property("auto-translated", BooleanType),
             Property("fin_ai_agent:_preview_mode", BooleanType),
             Property("probleem_met_de_vermelding", StringType),
