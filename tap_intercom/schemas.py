@@ -47,6 +47,7 @@ translated_content = [
 ]
 
 conversations_schema = PropertiesList(
+    Property("type", StringType),
     Property("id", StringType),
     Property("title", StringType),
     Property("created_at", IntegerType),
@@ -62,10 +63,12 @@ conversations_schema = PropertiesList(
     Property(
         "tags",
         ObjectType(
+            Property("type", StringType),
             Property(
                 "tags",
                 ArrayType(
                     ObjectType(
+                        Property("type", StringType),
                         Property("id", StringType),
                         Property("name", StringType),
                         Property("applied_at", IntegerType),
@@ -84,18 +87,22 @@ conversations_schema = PropertiesList(
     Property(
         "conversation_rating",
         ObjectType(
+            Property("updated_at", IntegerType),
             Property("rating", IntegerType),
             Property("remark", StringType),
             Property("created_at", IntegerType),
             Property(
                 "contact",
                 ObjectType(
+                    Property("external_id", StringType),
+                    Property("type", StringType),
                     Property("id", StringType),
                 ),
             ),
             Property(
                 "teammate",
                 ObjectType(
+                    Property("type", StringType),
                     Property("id", StringType),
                 ),
             ),
@@ -139,6 +146,7 @@ conversations_schema = PropertiesList(
     Property(
         "contacts",
         ObjectType(
+            Property("type", StringType),
             Property(
                 "contacts",
                 ArrayType(
@@ -154,10 +162,21 @@ conversations_schema = PropertiesList(
     Property(
         "teammates",
         ObjectType(
+            Property("type", StringType),
+            Property(
+                "admins",
+                ArrayType(
+                    ObjectType(
+                        Property("type", StringType),
+                        Property("id", StringType),
+                    ),
+                ),
+            ),
             Property(
                 "teammates",
                 ArrayType(
                     ObjectType(
+                        Property("type", StringType),
                         Property("id", StringType),
                     )
                 ),
@@ -175,6 +194,7 @@ conversations_schema = PropertiesList(
     Property(
         "sla_applied",
         ObjectType(
+            Property("type", StringType),
             Property("sla_name", StringType),
             Property("sla_status", StringType),
         ),
@@ -182,6 +202,28 @@ conversations_schema = PropertiesList(
     Property(
         "statistics",
         ObjectType(
+            Property("type", StringType),
+            Property(
+                "assigned_team_first_response_time",
+                ArrayType(
+                    ObjectType(
+                        Property("team_id", IntegerType),
+                        Property("team_name", StringType),
+                        Property("response_time", NumberType),
+                    )
+                ),
+            ),
+            Property(
+                "assigned_team_first_response_time_in_office_hours",
+                ArrayType(
+                    ObjectType(
+                        Property("team_id", IntegerType),
+                        Property("team_name", StringType),
+                        Property("response_time", NumberType),
+                    )
+                ),
+            ),
+            Property("handling_time", IntegerType),
             Property("time_to_assignment", IntegerType),
             Property("time_to_admin_reply", IntegerType),
             Property("time_to_first_close", IntegerType),
@@ -203,9 +245,64 @@ conversations_schema = PropertiesList(
         ),
     ),
     Property(
+        "conversation_parts",
+        ObjectType(
+            Property("type", StringType),
+            Property("total_count", IntegerType),
+            Property(
+                "conversation_parts",
+                ArrayType(
+                    ObjectType(
+                        Property("type", StringType),
+                        Property("id", StringType),
+                        Property("part_type", StringType),
+                        Property("body", StringType),
+                        Property("created_at", IntegerType),
+                        Property("updated_at", IntegerType),
+                        Property("notified_at", IntegerType),
+                        Property(
+                            "assigned_to",
+                            ObjectType(
+                                Property("type", StringType),
+                                Property("id", StringType),
+                            ),
+                        ),
+                        Property(
+                            "author",
+                            ObjectType(
+                                Property("type", StringType),
+                                Property("id", StringType),
+                                Property("name", StringType),
+                                Property("email", StringType),
+                            ),
+                        ),
+                        Property(
+                            "attachments",
+                            ArrayType(
+                                ObjectType(
+                                    Property("type", StringType),
+                                    Property("name", StringType),
+                                    Property("url", StringType),
+                                    Property("content_type", StringType),
+                                    Property("filesize", IntegerType),
+                                    Property("width", StringType),
+                                    Property("height", StringType),
+                                )
+                            ),
+                        ),
+                        Property("external_id", StringType),
+                        Property("redacted", BooleanType),
+                    )
+                ),
+            ),
+        ),
+    ),
+    Property(
         "linked_objects",
         ObjectType(
+            Property("type", StringType),
             Property("total_count", IntegerType),
+            Property("has_more", BooleanType),
             Property(
                 "data",
                 ArrayType(
@@ -217,9 +314,50 @@ conversations_schema = PropertiesList(
             ),
         ),
     ),
+    Property("ai_agent_participated", BooleanType),
+    Property(
+        "ai_agent",
+        ObjectType(
+            Property("source_type", StringType),
+            Property("source_title", StringType),
+            Property("last_answer_type", StringType),
+            Property("resolution_state", StringType),
+            Property("rating", IntegerType),
+            Property("rating_remark", StringType),
+            Property("created_at", IntegerType),
+            Property("updated_at", IntegerType),
+            Property(
+                "content_sources",
+                ObjectType(
+                    Property("type", StringType),
+                    Property("total_count", IntegerType),
+                    Property(
+                        "content_sources",
+                        ArrayType(
+                            ObjectType(
+                                Property("content_type", StringType),
+                                Property("url", StringType),
+                                Property("title", StringType),
+                                Property("locale", StringType),
+                            )
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    # Keeping your custom attributes as requested
     Property(
         "custom_attributes",
         ObjectType(
+            Property("imported_via_standalone", BooleanType),
+            Property("fin_ai_agent:_preview", BooleanType),
+            Property("auto-translated", BooleanType),
+            Property("fin_ai_agent:_preview_mode", BooleanType),
+            Property("probleem_met_de_vermelding", StringType),
+            Property("copilot_used", BooleanType),
+            Property("brand", StringType),
+            Property("has_attachments", BooleanType),
             Property(
                 "active_draft",
                 ObjectType(
@@ -251,6 +389,7 @@ conversations_schema = PropertiesList(
             Property(
                 "latest_bought_listings",
                 ObjectType(
+                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -273,6 +412,7 @@ conversations_schema = PropertiesList(
             Property(
                 "selected_bought_listing",
                 ObjectType(
+                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -295,6 +435,7 @@ conversations_schema = PropertiesList(
             Property(
                 "last_payout",
                 ObjectType(
+                    Property("type", StringType),
                     Property(
                         "instances",
                         ArrayType(
@@ -333,8 +474,9 @@ conversations_schema = PropertiesList(
 ).to_dict()
 
 conversation_parts_schema = PropertiesList(
-    Property("id", StringType),
     Property("conversation_id", StringType),
+    Property("type", StringType),
+    Property("id", StringType),
     Property("part_type", StringType),
     Property("body", StringType),
     Property("created_at", IntegerType),
@@ -354,6 +496,8 @@ conversation_parts_schema = PropertiesList(
             Property("id", StringType),
             Property("name", StringType),
             Property("email", StringType),
+            Property("from_ai_agent", BooleanType),
+            Property("is_ai_answer", BooleanType),
         ),
     ),
     Property(
@@ -372,31 +516,99 @@ conversation_parts_schema = PropertiesList(
     ),
     Property("external_id", StringType),
     Property("redacted", BooleanType),
+    Property("conversation_part_has_body", BooleanType),
+    Property("conversation_part_has_attachments", BooleanType),
     Property(
-        "conversation_part_has_body",
-        BooleanType,
-        description=(
-            "Indicates whether this conversation part contains a non-empty body. "
-            "True if the body field is present and not empty, false otherwise."
+        "email_message_metadata",
+        ObjectType(
+            Property("subject", StringType),
+            Property(
+                "email_address_headers",
+                ArrayType(
+                    ObjectType(
+                        Property("type", StringType),
+                        Property("email_address", StringType),
+                        Property("name", StringType),
+                    )
+                ),
+            ),
         ),
     ),
     Property(
-        "conversation_part_has_attachments",
-        BooleanType,
-        description=(
-            "Indicates whether this conversation part has files attached. "
-            "True if at least one file is attached, false otherwise."
+        "metadata",
+        ObjectType(
+            Property(
+                "quick_reply_options",
+                ArrayType(
+                    ObjectType(
+                        Property("translations", ObjectType()),
+                        Property("text", StringType),
+                        Property("uuid", StringType),
+                    )
+                ),
+            ),
+            Property("quick_reply_uuid", StringType),
+            Property("quick_reply_option_uuid", StringType),
         ),
     ),
+    Property("state", StringType),
+    Property(
+        "tags",
+        ArrayType(
+            ObjectType(
+                Property("type", StringType),
+                Property("id", StringType),
+                Property("name", StringType),
+            )
+        ),
+    ),
+    Property(
+        "event_details",
+        ObjectType(
+            Property(
+                "action",
+                ObjectType(
+                    Property("name", StringType),
+                    Property("result", StringType),
+                ),
+            ),
+            Property(
+                "attribute",
+                ObjectType(
+                    Property("name", StringType),
+                ),
+            ),
+            Property(
+                "workflow",
+                ObjectType(
+                    Property("group_title", StringType),
+                    Property("name", StringType),
+                ),
+            ),
+            Property(
+                "value",
+                ObjectType(
+                    Property("name", StringType),
+                ),
+            ),
+            Property(
+                "event",
+                ObjectType(
+                    Property("type", StringType),
+                    Property("result", StringType),
+                ),
+            ),
+        ),
+    ),
+    Property("app_package_code", StringType),
 ).to_dict()
 
 admins_schema = PropertiesList(
+    Property("type", StringType),
     Property("id", StringType),
     Property("name", StringType),
-    Property("away_mode_enabled", BooleanType),
-    Property("away_mode_reassign", BooleanType),
-    Property("has_inbox_seat", BooleanType),
-    Property("team_ids", ArrayType(IntegerType)),
+    Property("email", StringType),
+    Property("job_title", StringType),
     Property(
         "team_priority_level",
         ObjectType(
@@ -404,11 +616,31 @@ admins_schema = PropertiesList(
             Property("secondary_team_ids", ArrayType(IntegerType)),
         ),
     ),
+    Property("away_mode_enabled", BooleanType),
+    Property("away_mode_reassign", BooleanType),
+    Property("has_inbox_seat", BooleanType),
+    Property("team_ids", ArrayType(IntegerType)),
+    Property(
+        "avatar",
+        ObjectType(
+            Property("type", StringType),
+            Property("image_url", StringType),
+        ),
+    ),
 ).to_dict()
 
 tags_schema = PropertiesList(
+    Property("type", StringType),
     Property("id", StringType),
     Property("name", StringType),
+    Property("applied_at", IntegerType),
+    Property(
+        "applied_by",
+        ObjectType(
+            Property("type", StringType),
+            Property("id", StringType),
+        ),
+    ),
 ).to_dict()
 
 teams_schema = PropertiesList(
@@ -427,102 +659,170 @@ teams_schema = PropertiesList(
 
 contacts_schema = PropertiesList(
     Property("type", StringType),
-    Property("id", StringType, description="The unique identifier for the contact"),
+    Property("id", StringType),
+    Property("workspace_id", StringType),
+    Property("external_id", StringType),
+    Property("role", StringType),
+    Property("email", StringType),
+    Property("phone", StringType),
+    Property("name", StringType),
+    Property("avatar", StringType),
+    Property("owner_id", IntegerType),
     Property(
-        "external_id",
-        StringType,
-        description="An external identifier for the contact, set by the integrating application",
+        "social_profiles",
+        ObjectType(
+            Property("type", StringType),
+            Property(
+                "data",
+                ArrayType(
+                    ObjectType(
+                        Property("type", StringType),
+                        Property("name", StringType),
+                        Property("url", StringType),
+                    )
+                ),
+            ),
+        ),
     ),
-    Property(
-        "has_hard_bounced",
-        BooleanType,
-        description="Indicates whether the contact's email address has hard bounced",
-    ),
-    Property(
-        "marked_email_as_spam",
-        BooleanType,
-        description="Indicates whether the contact has marked emails from the workspace as spam",
-    ),
-    Property(
-        "unsubscribed_from_emails",
-        BooleanType,
-        description="Indicates whether the contact has unsubscribed from emails",
-    ),
-    Property("created_at", IntegerType, description="The time when the contact was created, in Unix time"),
-    Property("updated_at", IntegerType, description="The time when the contact was last updated, in Unix time"),
-    Property("last_seen_at", IntegerType, description="The time when the contact was last seen, in Unix time"),
-    Property("signed_up_at", IntegerType, description="The time when the contact signed up, in Unix time"),
-    Property("last_replied_at", IntegerType, description="The time when the contact last replied, in Unix time"),
-    Property(
-        "last_contacted_at", IntegerType, description="The time when the contact was last contacted, in Unix time"
-    ),
-    Property(
-        "last_email_opened_at",
-        IntegerType,
-        description="The time when the contact last opened an email, in Unix time",
-    ),
-    Property(
-        "last_email_clicked_at",
-        IntegerType,
-        description="The time when the contact last clicked a link in an email, in Unix time",
-    ),
-    Property("language_override", StringType, description="The language override for the contact"),
-    Property("browser", StringType, description="The browser used by the contact"),
-    Property("browser_version", StringType, description="The version of the browser used by the contact"),
-    Property("browser_language", StringType, description="The language of the browser used by the contact"),
-    Property("os", StringType, description="The operating system used by the contact"),
+    Property("has_hard_bounced", BooleanType),
+    Property("marked_email_as_spam", BooleanType),
+    Property("unsubscribed_from_emails", BooleanType),
+    Property("created_at", IntegerType),
+    Property("updated_at", IntegerType),
+    Property("signed_up_at", IntegerType),
+    Property("last_seen_at", IntegerType),
+    Property("last_replied_at", IntegerType),
+    Property("last_contacted_at", IntegerType),
+    Property("last_email_opened_at", IntegerType),
+    Property("last_email_clicked_at", IntegerType),
+    Property("language_override", StringType),
+    Property("browser", StringType),
+    Property("browser_version", StringType),
+    Property("browser_language", StringType),
+    Property("os", StringType),
     Property(
         "location",
         ObjectType(
-            Property("city", StringType, description="The city of the contact's location"),
-            Property("country", StringType, description="The country of the contact's location"),
-            Property("region", StringType, description="The region of the contact's location"),
-            Property("country_code", StringType, description="The ISO 3166-1 country code of the contact's location"),
+            Property("type", StringType),
+            Property("country", StringType),
+            Property("region", StringType),
+            Property("city", StringType),
+            Property("country_code", StringType),
+            Property("continent_code", StringType),
         ),
-        description="An object containing location meta data about a Intercom contact.",
     ),
-    Property("utm_source", StringType, description="The UTM source parameter from the contact's signup URL"),
-    Property("utm_medium", StringType, description="The UTM medium parameter from the contact's signup URL"),
-    Property("utm_campaign", StringType, description="The UTM campaign parameter from the contact's signup URL"),
-    Property("utm_term", StringType, description="The UTM term parameter from the contact's signup URL"),
-    Property("utm_content", StringType, description="The UTM content parameter from the contact's signup URL"),
+    Property("android_app_name", StringType),
+    Property("android_app_version", StringType),
+    Property("android_device", StringType),
+    Property("android_os_version", StringType),
+    Property("android_sdk_version", StringType),
+    Property("android_last_seen_at", IntegerType),
+    Property("ios_app_name", StringType),
+    Property("ios_app_version", StringType),
+    Property("ios_device", StringType),
+    Property("ios_os_version", StringType),
+    Property("ios_sdk_version", StringType),
+    Property("ios_last_seen_at", IntegerType),
     Property(
         "tags",
         ObjectType(
+            Property("type", StringType),
             Property(
                 "data",
                 ArrayType(
                     ObjectType(
                         Property("type", StringType),
                         Property("id", StringType),
-                    ),
+                        Property("url", StringType),
+                    )
                 ),
             ),
+            Property("url", StringType),
             Property("total_count", IntegerType),
+            Property("has_more", BooleanType),
         ),
-        description="Tags associated with the contact",
     ),
     Property(
         "notes",
         ObjectType(
+            Property("type", StringType),
             Property(
                 "data",
                 ArrayType(
                     ObjectType(
                         Property("type", StringType),
                         Property("id", StringType),
-                    ),
+                        Property("url", StringType),
+                    )
                 ),
             ),
+            Property("url", StringType),
             Property("total_count", IntegerType),
+            Property("has_more", BooleanType),
         ),
-        description="Notes associated with the contact",
     ),
-    Property("custom_attributes", ObjectType(), description="Custom attributes associated with the contact"),
+    Property(
+        "companies",
+        ObjectType(
+            Property("type", StringType),
+            Property(
+                "data",
+                ArrayType(
+                    ObjectType(
+                        Property("type", StringType),
+                        Property("id", StringType),
+                        Property("url", StringType),
+                    )
+                ),
+            ),
+            Property("url", StringType),
+            Property("total_count", IntegerType),
+            Property("has_more", BooleanType),
+        ),
+    ),
+    Property(
+        "custom_attributes",
+        ObjectType(
+            Property("preferred_language", StringType),
+            Property("countrycode", StringType),
+            Property("hascartitems", BooleanType),
+            Property("isuserverified", BooleanType),
+            Property("isabletosell", BooleanType),
+            Property("anonymousid", StringType),
+            Property("is_phone_verified", BooleanType),
+            Property("userid", StringType),
+            Property("id", StringType),
+            Property("country_code", StringType),
+            Property("haspayoutmethodsetup", BooleanType),
+            Property("is_employee", BooleanType),
+            Property("is_new_profile", BooleanType),
+            Property("display_name", StringType),
+            Property("verification_id", StringType),
+            Property("city", StringType),
+            Property("isphoneverified", BooleanType),
+            Property("project", StringType),
+            Property("isemailverified", BooleanType),
+            Property("article_id", StringType),
+            Property("job_title", StringType),
+            Property("last_payout_state_description", StringType),
+            Property("is_intersection_booted", BooleanType),
+            Property("email", StringType),
+            Property("hasgivenmarketingpushconsent", BooleanType),
+            Property("hasgivenmarketingemailconsent", BooleanType),
+            Property("octopods_messagebird_whatsapp_account_phone", StringType),
+            Property("octopods_channel", StringType),
+            Property("isreceivingemailnotifications", BooleanType),
+        ),
+    ),
 ).to_dict()
 
 articles_schema = PropertiesList(
     Property("id", StringType),
+    Property("type", StringType),
+    Property("workspace_id", StringType),
+    Property("default_locale", StringType),
+    Property("url", StringType),
+    Property("parent_id", IntegerType),
     Property("parent_type", StringType),
     Property("parent_ids", ArrayType(IntegerType)),
     Property(
@@ -564,6 +864,11 @@ articles_schema = PropertiesList(
 articles_extended_schema = PropertiesList(
     Property("id", StringType),
     Property("parent_type", StringType),
+    Property("type", StringType),
+    Property("workspace_id", StringType),
+    Property("default_locale", StringType),
+    Property("url", StringType),
+    Property("parent_id", IntegerType),
     Property("parent_ids", ArrayType(IntegerType)),
     Property(
         "translated_content",
