@@ -46,7 +46,7 @@ class IntercomStream(RESTStream):
         if user_agent:
             result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
-        result["Intercom-Version"] = "2.14"
+        result["Intercom-Version"] = "2.5"
         return result
 
     def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
