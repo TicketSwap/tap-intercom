@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import typing as t
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
@@ -20,6 +21,66 @@ class IntercomStream(RESTStream):
 
     primary_keys: t.ClassVar[list[str]] = ["id"]
     records_jsonpath = "$.data[*]"
+    timestamp_field_suffixes: t.ClassVar[tuple[str, ...]] = (
+        "_at",
+        "_since",
+        "_until",
+        "_date",
+        "_time",
+    )
+
+    @classmethod
+    def _is_timestamp_field(cls, field_name: str) -> bool:
+        """Return True if the field name represents a timestamp-like attribute."""
+        return field_name.endswith(cls.timestamp_field_suffixes)
+
+    @classmethod
+    def _coerce_unix_timestamp(cls, value: t.Any) -> t.Any:
+        """Convert datetime-like values to unix timestamp integers when possible."""
+        if value is None or isinstance(value, bool | int):
+            return value
+
+        if isinstance(value, float):
+            return int(value)
+
+        if isinstance(value, datetime.datetime):
+            dt_value = value
+            if dt_value.tzinfo is None:
+                dt_value = dt_value.replace(tzinfo=datetime.timezone.utc)
+            return int(dt_value.timestamp())
+
+        if isinstance(value, str):
+            string_value = value.strip()
+            if not string_value:
+                return value
+
+            if string_value.lstrip("-").isdigit():
+                return int(string_value)
+
+            try:
+                dt_value = datetime.datetime.fromisoformat(string_value.replace("Z", "+00:00"))
+            except ValueError:
+                return value
+
+            if dt_value.tzinfo is None:
+                dt_value = dt_value.replace(tzinfo=datetime.timezone.utc)
+            return int(dt_value.timestamp())
+
+        return value
+
+    @classmethod
+    def _normalize_timestamp_values(cls, payload: t.Any, field_name: str | None = None) -> t.Any:
+        """Recursively normalize timestamp-like values to unix timestamps."""
+        if isinstance(payload, dict):
+            return {key: cls._normalize_timestamp_values(value, key) for key, value in payload.items()}
+
+        if isinstance(payload, list):
+            return [cls._normalize_timestamp_values(item, field_name) for item in payload]
+
+        if field_name and cls._is_timestamp_field(field_name):
+            return cls._coerce_unix_timestamp(payload)
+
+        return payload
 
     @property
     def url_base(self) -> str:
@@ -136,7 +197,7 @@ class IntercomStream(RESTStream):
             row["custom_attributes"] = {
                 key.lower().replace(" ", "_"): value for key, value in row["custom_attributes"].items()
             }
-        return row
+        return t.cast(dict, self._normalize_timestamp_values(row))
 
     def get_new_paginator(self) -> JSONPathPaginator:
         """Return a new paginator instance for the stream.
