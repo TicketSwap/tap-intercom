@@ -27,6 +27,16 @@ class TapIntercom(Tap):
             description="The earliest record date to sync, in unix timestamp format",
         ),
         th.Property(
+            "replication_lookback_window_seconds",
+            th.IntegerType,
+            default=0,
+            description=(
+                "Optional overlap window in seconds applied to incremental bookmarks. "
+                "Use this to replay recent records and reduce misses caused by API pagination drift "
+                "or near-boundary updates."
+            ),
+        ),
+        th.Property(
             "filters",
             th.ObjectType(
                 th.Property(
