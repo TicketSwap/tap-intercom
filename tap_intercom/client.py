@@ -144,7 +144,7 @@ class IntercomStream(RESTStream):
                 next page of data.
         """
         if self.http_method == "POST":
-            body = {"sort": {"field": self.replication_key, "order": "ascending"}}
+            body = {}
             start_date = self.get_starting_replication_key_value(context)
             if start_date and self.replication_key and self._is_timestamp_field(self.replication_key):
                 bookmark_value = self._coerce_unix_timestamp(start_date)
