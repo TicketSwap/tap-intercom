@@ -107,7 +107,7 @@ class IntercomStream(RESTStream):
         if user_agent:
             result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
-        result["Intercom-Version"] = "2.5"
+        result["Intercom-Version"] = "2.15"
         return result
 
     def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
@@ -146,6 +146,12 @@ class IntercomStream(RESTStream):
         if self.http_method == "POST":
             body = {"sort": {"field": self.replication_key, "order": "ascending"}}
             start_date = self.get_starting_replication_key_value(context)
+            if start_date and self.replication_key and self._is_timestamp_field(self.replication_key):
+                bookmark_value = self._coerce_unix_timestamp(start_date)
+                lookback_seconds = int(self.config.get("replication_lookback_window_seconds", 0) or 0)
+                lookback_seconds = max(0, lookback_seconds)
+                if isinstance(bookmark_value, int):
+                    start_date = max(0, bookmark_value - lookback_seconds)
             if start_date or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
                     "operator": "AND",
@@ -164,6 +170,7 @@ class IntercomStream(RESTStream):
                     )
             if next_page_token:
                 body["pagination"] = {"per_page": 150, "starting_after": next_page_token}
+            self.logger.info(f"Prepared request payload for {self.name} stream: {body}")
             return body
         return None
 
