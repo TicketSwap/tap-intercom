@@ -31,21 +31,11 @@ class ConversationsStream(IntercomStream):
     records_jsonpath = "$.conversations[*]"
     http_method = "POST"
     schema = conversations_schema
-    is_sorted = True
+    is_sorted = False
 
     def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
-
-    def prepare_request_payload(
-        self,
-        context: dict | None,
-        next_page_token: object,
-    ) -> dict | None:
-        """Return the request payload for the API call."""
-        payload = super().prepare_request_payload(context, next_page_token) or {}
-        payload.setdefault("sort", {"field": self.replication_key, "order": "asc"})
-        return payload
 
 
 class ConversationPartsStream(IntercomStream):
