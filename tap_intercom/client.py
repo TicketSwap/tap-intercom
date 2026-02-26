@@ -170,7 +170,6 @@ class IntercomStream(RESTStream):
                     )
             if next_page_token:
                 body["pagination"] = {"per_page": 150, "starting_after": next_page_token}
-            self.logger.info(f"Prepared request payload for {self.name} stream: {body}")
             return body
         return None
 
