@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import datetime
 import typing as t
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
