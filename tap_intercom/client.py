@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 import typing as t
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
@@ -119,6 +120,22 @@ class IntercomStream(RESTStream):
             The most recent value between the bookmark and start date.
         """
         return max(value, start_date_value)
+
+    def get_replication_key_signpost(self, context: dict | None) -> int | None:
+        """Overrides the signpost to be the Unix integer at sync start for incremental streams.
+
+        This enables the SDK to finalize state as the lower of max(replication_key_value)
+        seen during the run and the run start time.
+
+        Args:
+            context: Stream partition or context dictionary.
+
+        Returns:
+            Unix timestamp signpost for integer replication keys, else None.
+        """
+        if not self.replication_key:
+            return None
+        return int(time.time())
 
     def post_process(
         self,
