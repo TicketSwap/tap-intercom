@@ -85,12 +85,6 @@ class IntercomStream(RESTStream):
         if self.http_method == "POST":
             body = {}
             start_date = self.get_starting_replication_key_value(context)
-            if start_date and self.replication_key:
-                bookmark_value = start_date
-                lookback_seconds = int(self.config.get("replication_lookback_window_seconds", 0) or 0)
-                lookback_seconds = max(0, lookback_seconds)
-                if isinstance(bookmark_value, int):
-                    start_date = max(0, bookmark_value - lookback_seconds)
             if start_date or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
                     "operator": "AND",
@@ -100,6 +94,8 @@ class IntercomStream(RESTStream):
                     ],
                 }
                 if start_date:
+                    if start_date != self.config.get("start_date"):
+                        start_date -= int(self.config.get("replication_lookback_window_seconds", 0) or 0)
                     body["query"]["value"].append(
                         {
                             "field": self.replication_key,
