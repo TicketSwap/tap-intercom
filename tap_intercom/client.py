@@ -96,7 +96,7 @@ class IntercomStream(RESTStream):
                 }
                 if start_date:
                     if start_date != self.config.get("start_date"):
-                        start_date -= int(self.config.get("replication_lookback_window_seconds", 0) or 0)
+                        start_date -= int(self.config["replication_lookback_window_seconds"]
                     body["query"]["value"].append(
                         {
                             "field": self.replication_key,
