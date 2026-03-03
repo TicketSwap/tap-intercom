@@ -60,7 +60,7 @@ class ConversationPartsStream(IntercomStream):
             The resulting record dict, or `None` if the record should be excluded.
         """
         row["conversation_id"] = context["conversation_id"]
-        return super().post_process(row, context)
+        return row
 
 
 class AdminsStream(IntercomStream):
