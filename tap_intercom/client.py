@@ -121,7 +121,10 @@ class IntercomStream(RESTStream):
         """
         return max(value, start_date_value)
 
-    def get_replication_key_signpost(self, context: dict | None) -> int | None:
+    def get_replication_key_signpost(
+        self,
+        context: dict | None,  # noqa: ARG002
+    ) -> int | None:
         """Overrides the signpost to be the Unix integer at sync start for incremental streams.
 
         This enables the SDK to finalize state as the lower of max(replication_key_value)
@@ -135,7 +138,10 @@ class IntercomStream(RESTStream):
         """
         if not self.replication_key:
             return None
-        return int(time.time())
+        signpost = int(time.time())
+        self.logger.info("Setting replication key signpost to current Unix timestamp at sync start.")
+        self.logger.info("Signpost value: %s", signpost)
+        return signpost
 
     def post_process(
         self,
