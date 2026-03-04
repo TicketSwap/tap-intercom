@@ -42,15 +42,16 @@ Built with the [Meltano Singer SDK](https://sdk.meltano.com).
 
 ## Settings
 
-| Setting             | Required | Default | Description |
-|:--------------------|:--------:|:-------:|:------------|
-| access_token        | True     | None    | The token to authenticate against the API service |
-| start_date          | False    | None    | The earliest record date to sync |
-| stream_maps         | False    | None    | Config object for stream maps capability. For more information check out [Stream Maps](https://sdk.meltano.com/en/latest/stream_maps.html). |
-| stream_map_config   | False    | None    | User-defined config values to be used within map expressions. |
-| flattening_enabled  | False    | None    | 'True' to enable schema flattening and automatically expand nested properties. |
-| flattening_max_depth| False    | None    | The max depth to flatten schemas. |
-| batch_config        | False    | None    |             |
+| Setting                              | Required | Default | Description                                                                                                                          |
+|:-------------------------------------|:--------:|:-------:|:-------------------------------------------------------------------------------------------------------------------------------------|
+| access_token                         |   True   |  None   | The token to authenticate against the API service                                                                                    |
+| start_date                           |  False   |  None   | The earliest record date to sync                                                                                                     |
+| replication_lookback_window_seconds  |  False   |    0    | Overlap window in seconds for incremental replication to replay recent records and reduce misses near bookmark boundaries            |
+| stream_maps                          |  False   |  None   | Config object for stream maps capability.                                                                                            |
+| stream_map_config                    |  False   |  None   | User-defined config values to be used within map expressions.                                                                        |
+| flattening_enabled                   |  False   |  None   | 'True' to enable schema flattening and automatically expand nested properties.                                                       |
+| flattening_max_depth                 |  False   |  None   | The max depth to flatten schemas.                                                                                                    |
+| batch_config                         |  False   |  None   |                                                                                                                                      |
 
 A full list of supported settings and capabilities for this
 tap is available by running:

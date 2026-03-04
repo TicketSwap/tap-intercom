@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 import typing as t
 
 from singer_sdk.authenticators import BearerTokenAuthenticator
@@ -46,7 +47,7 @@ class IntercomStream(RESTStream):
         if user_agent:
             result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
-        result["Intercom-Version"] = "2.14"
+        result["Intercom-Version"] = "2.15"
         return result
 
     def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
@@ -83,7 +84,7 @@ class IntercomStream(RESTStream):
                 next page of data.
         """
         if self.http_method == "POST":
-            body = {"sort": {"field": self.replication_key, "order": "ascending"}}
+            body = {}
             start_date = self.get_starting_replication_key_value(context)
             if start_date or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
@@ -94,6 +95,8 @@ class IntercomStream(RESTStream):
                     ],
                 }
                 if start_date:
+                    if start_date != self.config.get("start_date"):
+                        start_date -= int(self.config["replication_lookback_window_seconds"])
                     body["query"]["value"].append(
                         {
                             "field": self.replication_key,
@@ -117,6 +120,28 @@ class IntercomStream(RESTStream):
             The most recent value between the bookmark and start date.
         """
         return max(value, start_date_value)
+
+    def get_replication_key_signpost(
+        self,
+        context: dict | None,  # noqa: ARG002
+    ) -> int | None:
+        """Overrides the signpost to be the Unix integer at sync start for incremental streams.
+
+        This enables the SDK to finalize state as the lower of max(replication_key_value)
+        seen during the run and the run start time.
+
+        Args:
+            context: Stream partition or context dictionary.
+
+        Returns:
+            Unix timestamp signpost for integer replication keys, else None.
+        """
+        if not self.replication_key:
+            return None
+        signpost = int(time.time())
+        self.logger.info("Setting replication key signpost to current Unix timestamp at sync start.")
+        self.logger.info("Signpost value: %s", signpost)
+        return signpost
 
     def post_process(
         self,
