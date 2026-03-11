@@ -54,7 +54,7 @@ class ConversationsStream(IntercomStream):
             # Log only minimal tag information at DEBUG level to avoid high-volume,
             # potentially sensitive per-record logging at INFO.
             tag_names = [tag.get("name") for tag in aircall_tags if tag.get("name")]
-            self.logger.info(
+            self.logger.warning(
                 "CONVERSATION_TAGS: id=%s tag_names=%s",
                 row.get("id"),
                 tag_names,
