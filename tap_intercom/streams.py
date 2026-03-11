@@ -33,7 +33,7 @@ class ConversationsStream(IntercomStream):
     schema = conversations_schema
     is_sorted = False
 
-    def post_process(self, row: dict, context: dict | None = None) -> dict | None:  # noqa: ARG002
+    def post_process(self, row: dict, context: dict | None = None) -> dict | None:
         """Log id-tags combinations if they contain "aircall" to help diagnose tap vs target issues.
 
         Args:
@@ -41,8 +41,11 @@ class ConversationsStream(IntercomStream):
             context: Stream partition or context dictionary.
 
         Returns:
-            The record dict, unchanged.
+            The record dict, or `None` if the record should be excluded.
         """
+        row = super().post_process(row, context)
+        if row is None:
+            return None
         aircall_tags = [
             tag for tag in (row.get("tags") or {}).get("tags") or []
             if "aircall" in (tag.get("name") or "").lower()
