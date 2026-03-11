@@ -33,6 +33,28 @@ class ConversationsStream(IntercomStream):
     schema = conversations_schema
     is_sorted = False
 
+    def post_process(self, row: dict, context: dict | None = None) -> dict | None:  # noqa: ARG002
+        """Log id-tags combinations if they contain "aircall" to help diagnose tap vs target issues.
+
+        Args:
+            row: Individual record in the stream.
+            context: Stream partition or context dictionary.
+
+        Returns:
+            The record dict, unchanged.
+        """
+        aircall_tags = [
+            tag for tag in (row.get("tags") or {}).get("tags") or []
+            if "aircall" in (tag.get("name") or "").lower()
+        ]
+        if aircall_tags:
+            self.logger.info(
+                "CONVERSATION_TAGS: id=%s tags=%s",
+                row.get("id"),
+                aircall_tags,
+            )
+        return row
+
     def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
         return {"conversation_id": record["id"]}
