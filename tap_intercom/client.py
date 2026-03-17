@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import time
 import typing as t
 
@@ -14,6 +15,8 @@ if t.TYPE_CHECKING:
 
 T = t.TypeVar("T")
 TPageToken = t.TypeVar("TPageToken")
+
+LOGGER = logging.getLogger(__name__)
 
 
 class IntercomStream(RESTStream):
@@ -169,7 +172,50 @@ class IntercomStream(RESTStream):
         Returns:
             JSONPathPaginator: Paginator for handling paginated API responses.
         """
-        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
+        return IntercomSearchPaginator(jsonpath="$.pages.next.starting_after")
+
+
+class IntercomSearchPaginator(JSONPathPaginator):
+    """JSONPath paginator with loop protection for repeated cursor tokens.
+
+    Some Intercom search endpoints can return cursor sequences that revisit
+    previously seen tokens (for example: A -> B -> A -> B) when the underlying
+    dataset is changing quickly. The base paginator only detects consecutive
+    repeats, so we guard against any previously seen cursor to prevent infinite
+    loops.
+    """
+
+    def __init__(self, jsonpath: str, *args: t.Any, **kwargs: t.Any) -> None:
+        """Create a new guarded paginator."""
+        super().__init__(jsonpath=jsonpath, *args, **kwargs)
+        self._seen_tokens: set[t.Any] = set()
+
+    def advance(self, response: requests.Response) -> None:
+        """Advance the page token and stop gracefully if a token repeats."""
+        self._page_count += 1
+
+        if not self.has_more(response):
+            self._finished = True
+            return
+
+        new_value = self.get_next(response)
+
+        if new_value and new_value in self._seen_tokens:
+            LOGGER.warning(
+                "Loop detected in pagination. Token %s was seen earlier (page %s). "
+                "Stopping pagination for this stream to avoid an infinite loop.",
+                new_value,
+                self._page_count,
+            )
+            self._finished = True
+            return
+
+        if not new_value:
+            self._finished = True
+            return
+
+        self._seen_tokens.add(new_value)
+        self._value = new_value
 
 
 class IntercomHATEOASPaginator(BaseHATEOASPaginator):
