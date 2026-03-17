@@ -187,7 +187,7 @@ class IntercomSearchPaginator(JSONPathPaginator):
 
     def __init__(self, jsonpath: str, *args: t.Any, **kwargs: t.Any) -> None:
         """Create a new guarded paginator."""
-        super().__init__(jsonpath=jsonpath, *args, **kwargs)
+        super().__init__(jsonpath, *args, **kwargs)
         self._seen_tokens: set[t.Any] = set()
 
     def advance(self, response: requests.Response) -> None:
