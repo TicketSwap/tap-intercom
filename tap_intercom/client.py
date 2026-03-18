@@ -172,6 +172,7 @@ class IntercomStream(RESTStream):
         Returns:
             JSONPathPaginator: Paginator for handling paginated API responses.
         """
+        self.logger.warning("Using guarded Intercom search paginator for stream '%s'.", self.name)
         return IntercomSearchPaginator(
             "$.pages.next.starting_after",
             logger=self.logger,
@@ -202,7 +203,7 @@ class IntercomSearchPaginator(JSONPathPaginator):
 
     def advance(self, response: requests.Response) -> None:
         """Advance the page token and stop gracefully if a token repeats."""
-        self._logger.debug("Advancing Intercom search paginator to next page.")
+        self._logger.warning("Advancing Intercom search paginator to next page.")
         self._page_count += 1
 
         if not self.has_more(response):
