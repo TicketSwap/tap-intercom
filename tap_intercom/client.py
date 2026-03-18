@@ -192,6 +192,7 @@ class IntercomSearchPaginator(JSONPathPaginator):
 
     def advance(self, response: requests.Response) -> None:
         """Advance the page token and stop gracefully if a token repeats."""
+        LOGGER.warning("Advancing paginator to next page.")
         self._page_count += 1
 
         if not self.has_more(response):
