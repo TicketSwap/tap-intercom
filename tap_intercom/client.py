@@ -172,7 +172,10 @@ class IntercomStream(RESTStream):
         Returns:
             JSONPathPaginator: Paginator for handling paginated API responses.
         """
-        return IntercomSearchPaginator(jsonpath="$.pages.next.starting_after")
+        return IntercomSearchPaginator(
+            "$.pages.next.starting_after",
+            logger=self.logger,
+        )
 
 
 class IntercomSearchPaginator(JSONPathPaginator):
@@ -185,14 +188,21 @@ class IntercomSearchPaginator(JSONPathPaginator):
     loops.
     """
 
-    def __init__(self, jsonpath: str, *args: t.Any, **kwargs: t.Any) -> None:
+    def __init__(
+        self,
+        jsonpath: str,
+        *args: t.Any,
+        logger: logging.Logger | None = None,
+        **kwargs: t.Any,
+    ) -> None:
         """Create a new guarded paginator."""
         super().__init__(jsonpath, *args, **kwargs)
+        self._logger = logger or LOGGER
         self._seen_tokens: set[t.Any] = set()
 
     def advance(self, response: requests.Response) -> None:
         """Advance the page token and stop gracefully if a token repeats."""
-        LOGGER.warning("Advancing paginator to next page.")
+        self._logger.debug("Advancing Intercom search paginator to next page.")
         self._page_count += 1
 
         if not self.has_more(response):
@@ -202,7 +212,7 @@ class IntercomSearchPaginator(JSONPathPaginator):
         new_value = self.get_next(response)
 
         if new_value and new_value in self._seen_tokens:
-            LOGGER.warning(
+            self._logger.warning(
                 "Loop detected in pagination. Token %s was seen earlier (page %s). "
                 "Stopping pagination for this stream to avoid an infinite loop.",
                 new_value,
