@@ -116,7 +116,7 @@ class IntercomStream(RESTStream):
                         {
                             "field": self.replication_key,
                             "operator": "<",
-                            "value": signpost,
+                            "value": signpost + 1,
                         },
                     )
             if next_page_token:
