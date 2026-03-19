@@ -115,7 +115,7 @@ class IntercomStream(RESTStream):
                     body["query"]["value"].append(
                         {
                             "field": self.replication_key,
-                            "operator": "<=",
+                            "operator": "<",
                             "value": signpost,
                         },
                     )
