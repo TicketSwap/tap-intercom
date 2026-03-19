@@ -89,7 +89,9 @@ class IntercomStream(RESTStream):
         if self.http_method == "POST":
             body = {}
             start_date = self.get_starting_replication_key_value(context)
-            if start_date or self.config.get("filters", {}).get(self.name):
+            signpost = self.get_replication_key_signpost(context)
+
+            if start_date or signpost or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
                     "operator": "AND",
                     "value": [
@@ -105,6 +107,16 @@ class IntercomStream(RESTStream):
                             "field": self.replication_key,
                             "operator": ">",
                             "value": start_date,
+                        },
+                    )
+                if signpost:
+                    # Freeze the extraction window for this sync to reduce cursor churn
+                    # on rapidly mutating datasets.
+                    body["query"]["value"].append(
+                        {
+                            "field": self.replication_key,
+                            "operator": "<=",
+                            "value": signpost,
                         },
                     )
             if next_page_token:
@@ -141,9 +153,13 @@ class IntercomStream(RESTStream):
         """
         if not self.replication_key:
             return None
-        signpost = int(time.time())
-        self.logger.info("Setting replication key signpost to current Unix timestamp at sync start.")
-        self.logger.info("Signpost value: %s", signpost)
+
+        signpost = getattr(self, "_replication_key_signpost", None)
+        if signpost is None:
+            signpost = int(time.time())
+            self._replication_key_signpost = signpost
+            self.logger.info("Setting replication key signpost to current Unix timestamp at sync start.")
+            self.logger.info("Signpost value: %s", signpost)
         return signpost
 
     def post_process(
