@@ -27,7 +27,7 @@ class ConversationsStream(IntercomStream):
 
     name = "conversations"
     path = "/conversations/search"
-    replication_key = "updated_at"
+    replication_key = "created_at"
     records_jsonpath = "$.conversations[*]"
     http_method = "POST"
     schema = conversations_schema
