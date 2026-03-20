@@ -90,8 +90,14 @@ class IntercomStream(RESTStream):
             body = {}
             start_date = self.get_starting_replication_key_value(context)
             signpost = self.get_replication_key_signpost(context)
+            end_date = self.config.get("end_date")
 
-            if start_date or signpost or self.config.get("filters", {}).get(self.name):
+            # Preserve the existing signpost behavior when end_date is not provided.
+            upper_bound = signpost if end_date is None else int(end_date)
+            if signpost is not None and end_date is not None:
+                upper_bound = min(signpost, int(end_date))
+
+            if start_date or upper_bound or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
                     "operator": "AND",
                     "value": [
@@ -109,14 +115,15 @@ class IntercomStream(RESTStream):
                             "value": start_date,
                         },
                     )
-                if signpost:
+                if upper_bound:
                     # Freeze the extraction window for this sync to reduce cursor churn
-                    # on rapidly mutating datasets.
+                    # on rapidly mutating datasets. If end_date is configured,
+                    # respect the earliest of end_date and signpost.
                     body["query"]["value"].append(
                         {
                             "field": self.replication_key,
                             "operator": "<",
-                            "value": signpost + 1,
+                            "value": upper_bound + 1,
                         },
                     )
             if next_page_token:

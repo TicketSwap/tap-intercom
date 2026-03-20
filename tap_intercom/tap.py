@@ -27,6 +27,11 @@ class TapIntercom(Tap):
             description="The earliest record date to sync, in unix timestamp format",
         ),
         th.Property(
+            "end_date",
+            th.IntegerType,
+            description="The latest record date to sync, in unix timestamp format",
+        ),
+        th.Property(
             "replication_lookback_window_seconds",
             th.IntegerType,
             default=0,
