@@ -27,39 +27,11 @@ class ConversationsStream(IntercomStream):
 
     name = "conversations"
     path = "/conversations/search"
-    replication_key = "created_at"
+    replication_key = "updated_at"
     records_jsonpath = "$.conversations[*]"
     http_method = "POST"
     schema = conversations_schema
     is_sorted = False
-
-    def post_process(self, row: dict, context: dict | None = None) -> dict | None:
-        """Log id-tags combinations if they contain "aircall" to help diagnose tap vs target issues.
-
-        Args:
-            row: Individual record in the stream.
-            context: Stream partition or context dictionary.
-
-        Returns:
-            The record dict, or `None` if the record should be excluded.
-        """
-        row = super().post_process(row, context)
-        if row is None:
-            return None
-        aircall_tags = [
-            tag for tag in (row.get("tags") or {}).get("tags") or []
-            if "aircall" in (tag.get("name") or "").lower()
-        ]
-        if aircall_tags:
-            # Log only minimal tag information at DEBUG level to avoid high-volume,
-            # potentially sensitive per-record logging at INFO.
-            tag_names = [tag.get("name") for tag in aircall_tags if tag.get("name")]
-            self.logger.warning(
-                "CONVERSATION_TAGS: id=%s tag_names=%s",
-                row.get("id"),
-                tag_names,
-            )
-        return row
 
     def get_child_context(self, record: dict, context: dict | None) -> dict:  # noqa: ARG002
         """Return a context dictionary for child streams."""
