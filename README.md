@@ -46,6 +46,7 @@ Built with the [Meltano Singer SDK](https://sdk.meltano.com).
 |:-------------------------------------|:--------:|:-------:|:-------------------------------------------------------------------------------------------------------------------------------------|
 | access_token                         |   True   |  None   | The token to authenticate against the API service                                                                                    |
 | start_date                           |  False   |  None   | The earliest record date to sync                                                                                                     |
+| end_date                             |  False   |  None   | The latest record date to sync                                                                                                       |
 | replication_lookback_window_seconds  |  False   |    0    | Overlap window in seconds for incremental replication to replay recent records and reduce misses near bookmark boundaries            |
 | stream_maps                          |  False   |  None   | Config object for stream maps capability.                                                                                            |
 | stream_map_config                    |  False   |  None   | User-defined config values to be used within map expressions.                                                                        |

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import time
 import typing as t
 
@@ -14,6 +15,8 @@ if t.TYPE_CHECKING:
 
 T = t.TypeVar("T")
 TPageToken = t.TypeVar("TPageToken")
+
+LOGGER = logging.getLogger(__name__)
 
 
 class IntercomStream(RESTStream):
@@ -47,7 +50,7 @@ class IntercomStream(RESTStream):
         if user_agent:
             result["User-Agent"] = user_agent
         result["Content-Type"] = "application/json"
-        result["Intercom-Version"] = "2.15"
+        result["Intercom-Version"] = "2.14"
         return result
 
     def get_url_params(self, context: dict | None, next_page_token: object) -> dict:  # noqa: ARG002
@@ -86,7 +89,15 @@ class IntercomStream(RESTStream):
         if self.http_method == "POST":
             body = {}
             start_date = self.get_starting_replication_key_value(context)
-            if start_date or self.config.get("filters", {}).get(self.name):
+            signpost = self.get_replication_key_signpost(context)
+            end_date = self.config.get("end_date")
+
+            # Preserve the existing signpost behavior when end_date is not provided.
+            upper_bound = signpost if end_date is None else int(end_date)
+            if signpost is not None and end_date is not None:
+                upper_bound = min(signpost, int(end_date))
+
+            if start_date or upper_bound or self.config.get("filters", {}).get(self.name):
                 body["query"] = {
                     "operator": "AND",
                     "value": [
@@ -102,6 +113,17 @@ class IntercomStream(RESTStream):
                             "field": self.replication_key,
                             "operator": ">",
                             "value": start_date,
+                        },
+                    )
+                if upper_bound:
+                    # Freeze the extraction window for this sync to reduce cursor churn
+                    # on rapidly mutating datasets. If end_date is configured,
+                    # respect the earliest of end_date and signpost.
+                    body["query"]["value"].append(
+                        {
+                            "field": self.replication_key,
+                            "operator": "<",
+                            "value": upper_bound + 1,
                         },
                     )
             if next_page_token:
@@ -138,9 +160,13 @@ class IntercomStream(RESTStream):
         """
         if not self.replication_key:
             return None
-        signpost = int(time.time())
-        self.logger.info("Setting replication key signpost to current Unix timestamp at sync start.")
-        self.logger.info("Signpost value: %s", signpost)
+
+        signpost = getattr(self, "_replication_key_signpost", None)
+        if signpost is None:
+            signpost = int(time.time())
+            self._replication_key_signpost = signpost
+            self.logger.info("Setting replication key signpost to current Unix timestamp at sync start.")
+            self.logger.info("Signpost value: %s", signpost)
         return signpost
 
     def post_process(
@@ -169,7 +195,60 @@ class IntercomStream(RESTStream):
         Returns:
             JSONPathPaginator: Paginator for handling paginated API responses.
         """
-        return JSONPathPaginator(jsonpath="$.pages.next.starting_after")
+        return IntercomSearchPaginator(
+            "$.pages.next.starting_after",
+            logger=self.logger,
+        )
+
+
+class IntercomSearchPaginator(JSONPathPaginator):
+    """JSONPath paginator with loop protection for repeated cursor tokens.
+
+    Some Intercom search endpoints can return cursor sequences that revisit
+    previously seen tokens (for example: A -> B -> A -> B) when the underlying
+    dataset is changing quickly. The base paginator only detects consecutive
+    repeats, so we guard against any previously seen cursor to prevent infinite
+    loops.
+    """
+
+    def __init__(
+        self,
+        jsonpath: str,
+        *args: t.Any,
+        logger: logging.Logger | None = None,
+        **kwargs: t.Any,
+    ) -> None:
+        """Create a new guarded paginator."""
+        super().__init__(jsonpath, *args, **kwargs)
+        self._logger = logger or LOGGER
+        self._seen_tokens: set[t.Any] = set()
+
+    def advance(self, response: requests.Response) -> None:
+        """Advance the page token and stop gracefully if a token repeats."""
+        self._page_count += 1
+
+        if not self.has_more(response):
+            self._finished = True
+            return
+
+        new_value = self.get_next(response)
+
+        if new_value and new_value in self._seen_tokens:
+            self._logger.warning(
+                "Loop detected in pagination. Token %s was seen earlier (page %s). "
+                "Stopping pagination for this stream to avoid an infinite loop.",
+                new_value,
+                self._page_count,
+            )
+            self._finished = True
+            return
+
+        if not new_value:
+            self._finished = True
+            return
+
+        self._seen_tokens.add(new_value)
+        self._value = new_value
 
 
 class IntercomHATEOASPaginator(BaseHATEOASPaginator):
