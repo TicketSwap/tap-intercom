@@ -598,6 +598,8 @@ conversation_parts_schema = PropertiesList(
                     Property("result", StringType),
                 ),
             ),
+            Property("tags_added", ArrayType(StringType)),
+            Property("tags_removed", ArrayType(StringType)),
         ),
     ),
     Property("app_package_code", StringType),
