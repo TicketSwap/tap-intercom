@@ -1,6 +1,6 @@
 """Tests standard tap features using the built-in SDK tests library."""
 
-import datetime
+import datetime as dt
 import os
 
 from singer_sdk.testing import SuiteConfig, get_tap_test_class
@@ -8,7 +8,7 @@ from singer_sdk.testing import SuiteConfig, get_tap_test_class
 from tap_intercom.tap import TapIntercom
 
 SAMPLE_CONFIG = {
-    "start_date": int((datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=1)).timestamp()),
+    "start_date": int((dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=1)).timestamp()),
     "access_token": os.getenv("TAP_INTERCOM_ACCESS_TOKEN"),
 }
 
