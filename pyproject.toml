@@ -12,7 +12,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -20,17 +19,17 @@ classifiers = [
 ]
 license = "Apache-2.0"
 license-file = "LICENSE"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "singer-sdk>=0.42.1",
+    "singer-sdk>=0.54.9",
     "fs-s3fs",
-    "requests",
-    "boto3>=1.40.18",
+    "requests>=2.34.2",
+    "boto3>=1.43.106",
 ]
 
 [project.optional-dependencies]
 s3 = [
-    "s3fs~=2025.9.0",
+    "s3fs~=2026.9.0",
 ]
 
 [project.scripts]
@@ -43,14 +42,14 @@ dev = [
     { include-group = "typing" },
 ]
 test = [
-    "pytest>=8",
-    "pytest-github-actions-annotate-failures>=0.3",
+    "pytest>=9.1.1",
+    "pytest-github-actions-annotate-failures>=0.4.2",
     "singer-sdk[testing]",
-    "ruff>=0.8.4",
+    "ruff>=0.17.2",
 ]
 typing = [
-    "mypy>=1.16.0",
-    "types-requests",
+    "mypy>=2.4.0",
+    "types-requests>=2.33.0.20261006",
 ]
 
 [tool.pytest.ini_options]
@@ -67,6 +66,7 @@ line-length = 120
 [tool.ruff.lint]
 ignore = [
     "COM812",  # missing-trailing-comma
+    "CPY001",
 ]
 select = ["ALL"]
 
@@ -96,7 +96,6 @@ env_list = [
     "py312",
     "py311",
     "py310",
-    "py39",
 ]
 
 [tool.tox.env_run_base]
