@@ -24,7 +24,7 @@ dependencies = [
     "singer-sdk>=0.54.9",
     "fs-s3fs",
     "requests>=2.34.2",
-    "boto3>=1.43.106",
+    "boto3>=1.43.115",
 ]
 
 [project.optional-dependencies]
