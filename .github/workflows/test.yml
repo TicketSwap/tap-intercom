@@ -14,12 +14,6 @@ on:
     - uv.lock
   pull_request:
     branches: [main]
-    paths:
-    - .github/workflows/test.yml
-    - tap_intercom/**
-    - tests/**
-    - pyproject.toml
-    - uv.lock
   workflow_dispatch:
 
 permissions:
@@ -30,25 +24,20 @@ env:
   TAP_INTERCOM_ACCESS_TOKEN: ${{ secrets.TAP_INTERCOM_ACCESS_TOKEN }}
 
 jobs:
-  linting:
-    name: Linting
+  lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - name: Set up Python
-      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
-        python-version: "3.12"
+        persist-credentials: false
     - name: Setup uv
       uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
-      with:
-        version: ">=0.7"
-    - name: Run Linting
+    - name: Run ruff
       run: |
-        uvx --with=tox-uv tox -e linting
+        uvx ruff@0.17.3 check
+        uvx ruff@0.17.3 format --check
 
   pytest:
-    name: Integration Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -71,3 +60,12 @@ jobs:
     - name: Run Tox
       run: |
         uvx --with=tox-uv tox -e $(echo py${{ matrix.python-version }} | tr -d .)
+
+  test:
+    if: always()
+    needs: [pytest]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fail if any pytest leg failed
+      if: needs.pytest.result != 'success'
+      run: exit 1
