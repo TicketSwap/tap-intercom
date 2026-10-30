@@ -45,7 +45,7 @@ test = [
     "pytest>=9.1.1",
     "pytest-github-actions-annotate-failures>=0.4.2",
     "singer-sdk[testing]",
-    "ruff>=0.17.2",
+    "ruff>=0.17.3",
 ]
 typing = [
     "mypy>=2.4.0",
