@@ -49,7 +49,7 @@ test = [
 ]
 typing = [
     "mypy>=2.4.0",
-    "types-requests>=2.33.0.20261006",
+    "types-requests>=2.33.0.20261030",
 ]
 
 [tool.pytest.ini_options]
